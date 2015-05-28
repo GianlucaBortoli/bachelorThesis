@@ -1,2 +1,1 @@
-# thesis
-My bachelor thesis
+# PROSIT: A TOOL FOR OPTIMAL DESIGN OF SOFT-REAL TIME SYSTEMS
