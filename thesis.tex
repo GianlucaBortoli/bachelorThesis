@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper,twoside,openright]{book}
+\documentclass[11pt,a4paper,twoside,openright]{book}
 
 \input{packages} % load packages config
 \usepackage{frontmatter} % first page layout and meta
@@ -39,7 +39,6 @@
 % ------------------
 \mainmatter
 
-\input{sections/abstract}
 \input{sections/introduction}
 
 %\pagestyle{plain}
@@ -48,8 +47,11 @@
 %\appendix
 %\input{sections/appendix.tex}
 
+%hack
+\cite{*}
+
 %\clearpage
-\addcontentsline{toc}{chapter}{References}
+%\addcontentsline{toc}{chapter}{References}
 \bibliographystyle{plain}
 \bibliography{bibliography}
 
