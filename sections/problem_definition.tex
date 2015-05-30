@@ -1,18 +1,19 @@
 %!TEX root=../thesis.tex
 \chapter{Problem definition}\label{chp:model}
 
-% - formal task definition
-% - periodic, aperiodic and sporadic tasks
-% - schedulers + (preemptive & non-preemptive)?
-% - define RR and its properties
-% - markov process background
-% - quasi birth-deadth process
-% - why we modeled task like this
+% + formal task definition
+% + periodic, aperiodic and sporadic tasks
+% + schedulers
+% + define RR and its properties
+% + the problem we want to resolve
+% + the QoS function
+% + markov process background
+% - quasi birth-deadth process interpretation
+% - the benefits of modeling as QBDP
 
 \section{The task model}
 We consider a set of real-time tasks \( \{\tau_{i}\} \) which share a processing unit (CPU), where every tast consists of a stream of jobs \( J_{i,\,k} \).\\
 Each job \( j_{i,\,k} \) is defined as a touple \( \left(r_{i,\,k}, \;f_{i,\,k}, \;c_{i,\,k}\right) \) in which:
-
 \begin{itemize}
   \item \( r_{i,\,k} \) is the \emph{release} time for the \( k_{th} \) instance of the \( i_{th} \) task. In other words this is the time in which the job arrives and becomes elegible for execution by the scheduler.
   \item \( f_{i,\,k} \) is the \emph{finishing} time, that is the moment in which the computation for the \( j_{i,\,k} \) ends.
@@ -22,7 +23,7 @@ Each job \( j_{i,\,k} \) is defined as a touple \( \left(r_{i,\,k}, \;f_{i,\,k},
 The computation time is assumed to be an independent and identically distributed (i.i.d.\footnote{Two random variables X and Y are said to be i.i.d. if the first has the same probability distribution of the second one and both are mutually indipendent, which means that the occurrence of X does not affect Y (and vice versa).}) stochastic process, since the soft real-time model we are going to explain and use is based on probabilistic deadlines rather than the classic hard deadline.\\
 Hence for each \( k \), \( c_{i,\,k} \) is a random variable described by a certain Probability Mass Function (PMF).\\
 Every job \( J_{i,\,k} \) has also a relative deadline \( D_{i} \), which is used to define the absolute deadline \( d_{i,\,k} = r_{i,\,k} + D_{i} \). \\
-A deadline is respected if \( f_{i,\,k} \leq d_{i,\,k} \) and it is missed if \( f_{i,\,k} > d_{i,\,k} \). In order to be more precise, a probabilistic deadline is respected if \( \Pr\{f_{i,\,k} > r_{i,\,k} + D_{i} \} \leq p_{i} \).\\
+A deadline is respected if \( f_{i,\,k} \leq d_{i,\,k} \) and it is missed if \( f_{i,\,k} > d_{i,\,k} \). In order to be more precise, a probabilistic deadline is respected if \( \Pr\{f_{i,\,k} > r_{i,\,k} + D_{i} \} \leq p_{i} \).
 
 \section{Different type of tasks}
 There are three types of tasks: \emph{periodic}, \emph{aperiodic} and \emph{sporadic}.\\
@@ -31,12 +32,54 @@ The second class is composed of these tasks which are not characterize by period
 The last type of tasks are very similar to the periodic ones, because both have a minimin interarrival time between each activation, even though it is not always the same. A sporadic task is triggered by an external event which needs the task to be activated, not a timer as happens in for a periodic one.\\
 The work which will be described in following chapters takes into consideration only the first two types of tasks.
 
-\section{The task scheduler}
-The tasks do not run on the bare computer hardware: the operating system (OS) creates the illusion for each task to have a virtual CPU where they can execute on their own, without the need to share it with anyone else. This gives them the illusion that they are running concurrently and in parallel on the same machine \footnote{This is true if we think of a CPU with one single core. Modern CPUs are multicore, which gives the possibility to actually run multiple tasks at the same time, with an upper bound for the number of process to be executed in parallel given by the number of cores}.\\
+\section{The scheduler}
+The tasks do not run on the bare computer hardware: the Operating System (OS) creates the illusion for each task to have a virtual CPU where they can execute on their own, without the need to share it with anyone else. This gives them the illusion that they are running concurrently and in parallel on the same machine \footnote{This is true if we think of a CPU with one single core. Modern CPUs are multicore, which gives the possibility to actually run multiple tasks at the same time, with an upper bound for the number of process to be executed in parallel given by the number of cores}.\\
 Since it is possible to run only one task at a time they need to alternate each other, in order to give everyone the possibility to get their work done. Here is when the \emph{task scheduler} starts its job. The scheduler is responsible for generating a \emph{schedule}, starting from a set of tasks \( \{\tau_{i}\} \).\\
 There are several scheduling algorithm which are used to select at every instant \emph{t} which is the task to be executed. More in general a scheduling algorithm \emph{A} generates a schedule \( \sigma_{A}\left(t\right) \) starting from a set of tasks \( \{\tau_{i}\} \).\\
 At the end a schedulability test is performed, in which it is checked if the schedule generated by the algorithm \emph{A} guarantees that every deadline (probabilistic or not) is met.\\
-There are lots of scheduling algorithm which can be used, such as rate monotonic (RM), earliest deadline first (EDF) and many others, but we concentrated on the \emph{SCHED\_DEADLINE} algorithm, which is the scheduler currently used in the Linux kernel \footnote{It became the default scheduler from the 3.14 version of the kernel and it is still the one present in the latest kernel available on \url{www.kernel.org}. The old one was a modified version of the EDF algorithm}.\\
+There are lots of scheduling algorithm which can be used, such as rate monotonic (RM), earliest deadline first (EDF) and many others, but we concentrated on the \emph{sched\_deadline} algorithm, which is the scheduler currently used in the Linux kernel \footnote{\emph{Sched\_deadline} became the default scheduler from the 3.14 version of the kernel; it is also known as Complete Fair Queuing (CFQ) and it is still the one used in the latest kernel available on \url{www.kernel.org}. The old one was a modified version of the EDF algorithm}.
 
+\section{The Resource Reservation scheduling}
+As multiple real-time tasks can run concurrently, this scheduling algorithm allows to associate to a single task \( \tau_{i} \) a \emph{reservation} \( \left(Q_{i}^s,\,Q_{i}^s\right) \).\\ 
+This means that the \( i_{th} \) task can execute for \( Q_{i}^s \) time units in every interval of length \( T_{i}^s \). The first value is called \emph{budget} and the second is the \emph{period} of the task.\\
+In this way we allocate a fraction of CPU to the task \( \tau_{i} \), which is called \emph{bandwidth}; its is calculated as follows \( B_{i} = \frac{Q_{i}^s}{Q_{i}^s}\).\\
+As a consequence, the scheduler reserves for each task its amount of computation time \( Q_{i}^s \) in each period \( T_{i}^s \). It prevents the tasks to run for more time than their budget and therefore each task does not need to take care of what other tasks do while they are executing in parallel.\\
+This important propriety for resource reservation (RR) is called \emph{temporal isolation} and it is valid as long as the following scheduling condition holds:
+\begin{equation} \tag{1} \label{schedCond}
+  \displaystyle\sum_{i} B_{i} =  \displaystyle\sum_{i} \frac{Q_{i}^s}{Q_{i}^s} \leq 1
+\end{equation}
 
-\section{The stochastic model}
+This gives us a huge advantage, since we can analyze each task on its own, without careing about what other tasks do at the same time \cite{probGuarantees}.
+
+\section{The quality function}
+It is necessary to define also a function which is used to compute the resulting quality of the service, given the scheduling parameters.\\
+This function assumes that there exists a dependency between the scheduling parameters and the actual quality. This does not always exists or it can be very difficult to find \cite{prosit}.\\
+A possibility is to compute it as a function of the distribution of the delayed tasks. For example, talking about a video streaming sofware, if decoding a frame takes too much time and it leads to miss the deadline, that frame is not displayed and the following job decodes the next frame. Every frame not decoded within the deadline entail a frame not shown on the screen and, consequently, a decrease on the frame rate and on the QoS. 
+
+\section{The problem}
+In view of the last considerations, the \emph{analysis} problem we address can be stated as follows: given a series of real-time tasks with a PMF \( U(c) = \Pr\{c_{i,\,j} = c\} \) which describes the stochastic computation time, a PMF \( U(i) = \Pr\{i_{i,\,j} = i\} \) for the interarrival time, a QoS function and the scheduling parameters mentioned so far, say if the set of tasks is schedulable. If it is so, the resulting QoS is computed.\\
+For the analysis problem, the scheduling parameters are assumed to be selecred by the designer.
+
+\section{RR modeled as a Markov Chain}
+Let me introduce some notations:
+\begin{itemize}
+  \item \( F_{U}(c) = \displaystyle\sum_{h\,=\,c_{\,min}}^{c} U(c) \) denotes the Cumulative Distribution Function (CDF) for the computation time. For the seek of simplicity, it is assumed that the server period is an integer submultiple of the task period (\( T = NT^{s} \)).
+  \item \( d_{k}^{s} \) denotes the latest scheduling deadline used for the job \( J_{k} \). This is an upper bound for \( f_{i,\,k} \): if Equation (\ref{schedCond}) is respected, therefore \( f_{i,\,k} \leq d_{k}^{s} \).
+  \item \( \delta_{k} = d_{k}^{s} - r_{k} \) represents an upper bound for the respoinse time of the job.
+\end{itemize}
+
+The values \( \delta_{k} \) can take are only in the discrete set of the multiples of the task period and \( \Pr\{\delta_{k} < D\} \) is a lower bound for the prpbability to meet the deadline.\\
+The rule \( \delta_{k} \) follows is described in this way \cite{probGuarantees}:
+\begin{equation} \tag{2} \label{markovProcess}
+\begin{split}
+  v_{0} &= c_{0}\\
+  v_{k+1} &= max\{0,\,NQ^{s} + c_{k+1}\}\\
+  \delta_{k} &= \ceil[\bigg]{\frac{v_{k}}{Q^{s}}}
+\end{split}
+\end{equation}
+
+The variable \( v_{k} \) cannot be measured empirically, but it is the amount of backlogged computation time that has not be served yet by the scheduler, but it must be taken into account when a new job arrives.\\
+Since the computation time for each job is assumed to be an i.i.d. stochastic variable, the the moded shown by Equation \ref{markovProcess} represents a \emph{Discrete-Time Markov Chain} (DTMC).\\
+The states of the DTMC are determined by the values \( v_{k} \) can take, while the transitions are the values of the PMF for the computation time \( U(c) \).
+
+\section{The benefits of QBDP}
