@@ -1,10 +1,16 @@
 %!TEX root=../thesis.tex
 \chapter{Introduction}\label{chp:introduction}
-The term real-time is used to describe any information processing system which has to respond to externally generated input stimuli within a finite and specified period,s called deadline.
-These time constraint can be either \emph{hard}, \emph{soft} or \emph{firm}.\\
-A deadline is said to be hard if missing it will cause the system to crash or fail unespectedly. This is the case of safety-critical applications and other systems in which the result of an operation can not be given after a certain period of time.\\
-For example the microprocessor which is the core part of the control unit of our cars must analyze the data coming from the sensors around the body of the car and take decisions in a very short period; if it takes too much time to analyze the distance measured by the parking sensors, alerting the driver with a trill when he has already hit a wall would not be so useful.\\
-On the other hand, there are situation in which deadlines are not such strict; the usefulness of the result degrades with the passing of the time after the deadline and thus the quality of service (QoS), but it does not lead to any type of failure or damage.\\
-Moreover, it is possible to talk of \emph{probabilistic deadlines} for what concerns soft real-time systems. It is related to the QoS and it means that a probability of success is associated to every deadline; in this sense classic hard-real time systems are considered as a particular case in which the probability to meet the deadline is always one.\\ 
-Lastly, a deadline is said to be firm if a result computed late is completely useless (like hard real-time), leading to a reduction of the quality of service (like soft real-time) but not to a system crash.\\
-In this thesis the focus lays on the second category.
+
+% - what is real-time
+% - difference between soft, hard & firm
+% - where we can fint them in everyday life
+
+The term real-time is used to describe any information processing system which has to respond to externally generated input stimuli within a finite and specified period called \emph{deadline}.
+This time constraint can be either \emph{hard}, \emph{soft} or \emph{firm}.\\
+A deadline is said to be hard if missing it will cause the system to crash or fail unespectedly. This is the case of safety-critical applications and other systems in which the result of an operation must be given within this period of time.\\
+For example the microprocessor which is the core part of the control unit of our cars must first analyze the data coming from the sensors around the body and the othe parts of the car and then take decisions in a very short period. If it takes too much time to analyze the distance measured by the parking sensors, alerting the driver with a trill when he has already hit a wall would not be so useful.\\
+On the other hand, there are situation in which deadlines are not such strict; the usefulness of the result degrades as the time passes after the deadline and thus the quality of service (QoS), but it does not lead to any type of failure or damage.\\
+Moreover, it is possible to talk of \emph{probabilistic deadlines} for what concerns soft real-time systems. It is related to the QoS and it means that deadline must be met with a given probability; in this sense classic hard-real time systems are considered as a particular case in which such probability is always one.\\ 
+Lastly, a deadline is said to be firm if a result computed late is completely useless (like hard real-time), leading to a reduction of the quality of service (like soft real-time) but not to a system crash. This type of system can be seen as a mix between the two previous ones.\\
+In this thesis the focus lays on the second category.\\
+This branch of computer science is continuously gaining popularity, because the number of devices which embed a microprocessor unit and, in many cases, also a network interface is growing exponentially. Let us think not only to the cars mentioned before, but also to all the electrical applicances we have in our houses: all these tools are becoming way much smarter than their predecessors, building what is called the Internet of Things.    
