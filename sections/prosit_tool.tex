@@ -8,7 +8,7 @@
 %   la creazione della matrice (costruita in 3 fasi separate) in modo da sfruttare a pieno
 %   le regolarità presenti al suo interno --> dati su quanto siano migliorate le performance 
 %   dopo le modifiche (vedi mail con Bernardo per i numeri)
-% - approssimazione conservativa della PMF (sia in alto che in basso)
+% + approssimazione conservativa della PMF (sia in alto che in basso)
 % - distinzione solver da linea di comando e per xml
 %     [-] solver_command_line e descrizione parametri in input
 %     [-] xml_solver con esempi di chiamata + spiegazione struttura dell'xml da dare in input
@@ -76,7 +76,7 @@ where \emph{granularity} is the number of bins for the resampled PMF and \emph{d
   \label{resample}
 \end{figure}
 
-\subsection{Focus on matrix creation}
+\subsection{Transition matrix creation}
 The creation of the transition matrix which is later used to apply the algorithms can result in a critical performance bottleneck, since the size can be huge\footnote{Some tests we performed developing the tool calculated the algorithms on a matrix had a size od nearly one thousand.}. Given that the complexity of the algorithms mentioned in Section \ref{benefits} cannot be changed, this will certainly explain the motivation behind the effort to optimize as much as possible the matrix creation phase of the tool.\\
 As explained in \ref{transitionmatrix}, the whole transition matrix has a recurrent block structure.\\ 
 The first step is to limit the matrix size to the one of \( C \), \( A_{0} \), \( A_{1} \) and \( A_{2} \), since it can be theoretically have an infinite size, which makes it intractable computationally speaking. The values for \( max_{rows} \) and \( max_{cols} \) must be computed first, which are the maximum possible number of rows and columns respectively.\\ 
