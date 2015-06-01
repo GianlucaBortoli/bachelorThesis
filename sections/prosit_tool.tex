@@ -1,17 +1,17 @@
 %!TEX root=../thesis.tex
 \chapter{The PROSIT tool}\label{chp:tool}
 
-% - LA BASE DA CUI PARTIRE E' IL PAPER \ref{prosit}
+% + LA BASE DA CUI PARTIRE E' IL PAPER \ref{prosit}
 % + struttura dei moduli principali + linguaggio + librerie utilizzate + OOP patterns 
 % + use cases diagram (vedi paper) 
-% - focus nella creazione dei task RR (qbd_rr_colver.cpp) e di come abbiamo migliorato
+% + focus nella creazione dei task RR (qbd_rr_colver.cpp) e di come abbiamo migliorato
 %   la creazione della matrice (costruita in 3 fasi separate) in modo da sfruttare a pieno
 %   le regolarità presenti al suo interno --> dati su quanto siano migliorate le performance 
 %   dopo le modifiche (vedi mail con Bernardo per i numeri)
-% - l'approssimazione conservativa della PMF (sia in alto che in basso)
+% - approssimazione conservativa della PMF (sia in alto che in basso)
 % - distinzione solver da linea di comando e per xml
-%     [*] solver_command_line e descrizione parametri in input
-%     [*] xml_solver con esempi di chiamata + spiegazione struttura dell'xml da dare in input
+%     [-] solver_command_line e descrizione parametri in input
+%     [-] xml_solver con esempi di chiamata + spiegazione struttura dell'xml da dare in input
 % - descrizione web interface e motivi per cui è stata fatta (facilità d'uso per la creazione
 %   dell'xml da zero)
 
@@ -61,6 +61,21 @@ This solver for resource reservation tasks are based on algorithms for a numeric
 The \emph{pre\_process()} function creates the matrices used by the QBD algorithms, which are implemented in every sublclass under the name of \emph{apply\_algorithm()}. The second method is responsible of computing the probabilities from the matrix computed earlier. At the end \emph{post\_process()} guarantees that the algorithm gives a reasonable output, while the last method fills the map which is used to display te computation results.\\
 The functions described above are called by the solver in the order in which they have been presented.
 
+\subsection{Conservative approximation for PMF}
+Before building the transition matrix the values of the PMFs for both computation and interarrival times need a \emph{resampling} to an integer value\footnote{In the probabilistic deadline \emph{(t,p)}, both values can be expressed as floating point numbers; then, internally, PROSIT approximate them to an integer since we aim to output an estimate.}, in order to obtain a conservative approximation of its values.\\
+The way of reasoning is the same for both cases, but with a very important detail: a computation time has to be approximated to a greater value, while an interarrival time to a lower one.\\ 
+That was done because the tool must always be placed into a \emph{worst case scenario}. The resampling function is defined with the following parameters:
+\begin{lstlisting}[frame=bt]
+  pmf * resample(int granularity, bool direction);
+\end{lstlisting}
+
+where \emph{granularity} is the number of bins for the resampled PMF and \emph{direction} is a flag which is used to make an approximation either to a graret or to a lower value.\\
+\begin{figure}[H]
+  \center{\includegraphics[width=0.4\linewidth]{resample.png}}
+  \caption{A normal distribution (in red) resampled at 36 bins (in blue).}
+  \label{resample}
+\end{figure}
+
 \subsection{Focus on matrix creation}
 The creation of the transition matrix which is later used to apply the algorithms can result in a critical performance bottleneck, since the size can be huge\footnote{Some tests we performed developing the tool calculated the algorithms on a matrix had a size od nearly one thousand.}. Given that the complexity of the algorithms mentioned in Section \ref{benefits} cannot be changed, this will certainly explain the motivation behind the effort to optimize as much as possible the matrix creation phase of the tool.\\
 As explained in \ref{transitionmatrix}, the whole transition matrix has a recurrent block structure.\\ 
@@ -95,4 +110,9 @@ The approach used to calculate the values inside the matrix is based on its inte
 \end{figure}
 
 In the \( P_{i} \) matrix just described it is possible to spot an internal recurrent configuration, which is highlighted with the different names for the rows \emph{a}, \emph{b} and \emph{c}.\\
-To take advantage of this proprerty, the \emph{pre\_process()} method builds the matrix in three steps: the first one is to calculate only the first \emph{a}-row block and then copy its value througout the rest of the first block. Secondly all the \emph{transient}\footnote{This part of the matrix exists only if the task is aperiodic. In the case of a periodic one, this part of the matrix does not exists and the transition matrix is composed only of the \emph{a} and \emph{c} blocks.} rows denoted with the letter \emph{b} are calculated, cell by cell. In the \emph{c} block, as happened for the first one, only the first row is calculated and then it is copied to the following one shifted right by one.
+To take advantage of this proprerty, the \emph{pre\_process()} method builds the matrix in three steps: the first one is to calculate only the first \emph{a}-row block and then copy its value througout the rest of the first block. Secondly all the \emph{transient}\footnote{This part of the matrix exists only if the task is aperiodic. In the case of a periodic one, this part of the matrix does not exists and the transition matrix is composed only of the \emph{a} and \emph{c} blocks.} rows denoted with the letter \emph{b} are calculated, cell by cell. In the \emph{c} block, as happened for the first one, only the first row is calculated and then it is copied to the following one shifted right by one.\\
+Instead of calculating every single cell of the matrix, which needs a function, the time needed to calculate the entire matrix decreased of around 40\%, even though the overall complexity is still an \( O(n^{2}) \). For more details about this, see the Chapter with the empirical results.
+%
+% TODO: reference to the results of the gain in speed of the method
+%       see Bernardo's email with the values
+% 
