@@ -3,7 +3,7 @@
 
 % - LA BASE DA CUI PARTIRE E' IL PAPER \ref{prosit}
 % + struttura dei moduli principali + linguaggio + librerie utilizzate + OOP patterns 
-% - use cases diagram (vedi paper) 
+% + use cases diagram (vedi paper) 
 % - focus nella creazione dei task RR (qbd_rr_colver.cpp) e di coome abbiamo migliorato
 %   la creazione della matrice (costruita in 3 fasi separate) in modo da sfruttare a pieno
 %   le regolarità presenti al suo interno --> dati su quanto siano migliorate le performance 
@@ -43,4 +43,10 @@ The can be devided into standalone modules:
 %
 The most common use case for the PROSIT tools is the analysis problem: the designer is required to enter the parameters to define the task he/she wishes to analyse.\\
 Since a it can only be resource reservation task\footnote{The fixed priority type of task is currently under development and it is not available yet.}, the values for the time requirements (the PMF for the computation time and the one for the interarrival time, if the task is aperiodic) and the scheduling parameters \( Q_{i}^s \) and \( T_{i}^s \) must be provided. Thanks to the temporal isolation property defined in Equation \ref{schedCond}, it allows the tool to treat every task on its own if several tasks are passed as inputs to the tool. The distribution functions can be specified inside the task or taken as input from a file.\\
-As a result of a tool invocation, all the provided information are analysed and then the solver for the probabilisti deadlines is called. The \emph{apply\_algorithm()} method called by the probability solver object is a pure virtual function\footnote{Pure virtual functions in C++ are used to take advantage of polymorphism. This is essential for providing a unique interface for multiple objects, which implements different versions of the same method, based on the input selection.}; this allows PROSIT to call the right solution strategy selected by the user.  
+As a result of a tool invocation, all the provided information are analysed and then the solver for the probabilisti deadlines is called. The \emph{apply\_algorithm()} method called by the probability solver object is a pure virtual function\footnote{Pure virtual functions in C++ are used to take advantage of polymorphism. This is essential for providing a unique interface for multiple objects, which implements different versions of the same method, based on the input selection.}; this allows PROSIT to call the right solution strategy selected by the user.
+
+\begin{figure}[H]
+  \center{\includegraphics[width=0.7\linewidth]{usecase.png}}
+  \caption{The analysis usecase for PROSIT.}
+  \label{usecase}
+\end{figure}
