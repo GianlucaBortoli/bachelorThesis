@@ -22,10 +22,23 @@
 \usepackage{enumitem}
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{xcolor}
+
+%syntax highlighting for code
+\lstset{%
+  language=C++,
+  basicstyle=\ttfamily,
+  keywordstyle=\color{blue}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  commentstyle=\color{green}\ttfamily,
+  morecomment=[l][\color{magenta}]{\#}
+}
+
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \graphicspath{{img/}} % Specifies the directory where pictures are stored
 
-\usepackage{url}
 \hypersetup{
     unicode=true,          % non-Latin characters in Acrobats bookmarks
     pdftoolbar=true,        % show Acrobats toolbar?
