@@ -84,10 +84,13 @@ Since the computation time for each job is assumed to be an i.i.d. stochastic va
 The states of the DTMC are determined by the values \( v_{k} \) can take, while the transitions are the values of the PMF for the computation time \( U(c) \).
 
 \section{Markov Chains concepts}
-A Discrete-Time Markov Process (DTMP) \( \{X_{n}\} \) is a stochastic process which describes transitions between one state to another. It is composed by a set of \emph{states} and the \emph{thansitions}.\\
-%
-% TODO: insert image of the automaton in order to better explain a Marov chain
-%
+A Discrete-Time Markov Process (DTMP) \( \{X_{n}\} \) is a stochastic process which describes transitions between one state to another. It is composed by a set of \emph{states} and the \emph{thansitions}.
+\begin{figure}[H]
+  \center{\includegraphics[width=0.25\linewidth]{automaton.png}}
+  \caption{Graphical interpretation of a simple Markov chain.}
+  \label{automaton}
+\end{figure}
+
 It is described as a matrix \( P \) (also called transition matrix), in which the rows and the columns represent the states\footnote{For this reason the transition matrix is always squared.}, while the value stored in the cell \( P[i,\,j] \) is the probability to go from state \emph{i} to state \emph{j}.\\
 A Markov chain has a key property, which is at the base of any further consideration on this process: it is \textbf{memoryless}.\\
 This can be more formally expressed in terms of the conditional probabilies:
