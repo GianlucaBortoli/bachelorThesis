@@ -36,6 +36,17 @@
   morecomment=[l][\color{magenta}]{\#}
 }
 
+\lstdefinelanguage{XML}{%
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{blue},
+  keywordstyle=\color{cyan},
+  morekeywords={xmlns,version,type}% list your attributes here
+}
+%end syntax highlighting
+
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \graphicspath{{img/}} % Specifies the directory where pictures are stored
 

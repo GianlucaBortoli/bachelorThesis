@@ -15,7 +15,7 @@
 % - descrizione web interface e motivi per cui è stata fatta (facilità d'uso per la creazione
 %   dell'xml da zero)
 
-\section{Internal structure}
+\section{Internal structure}\label{structure}
 PROSIT is written in C++ and has a modular structure, as Object Oriented Programming (OOP) implicitly suggests to use.\\
 Some external libraries have been used in order to increase the performance during the matrices/vectors operarions and to simplify some others. The most important ones are \emph{Eigen}\footnote{\url{http://eigen.tuxfamily.org}}, \emph{TinyXML-2}\footnote{\url{https://github.com/leethomason/tinyxml2}} and \emph{Doxygen}\footnote{\url{http://www.stack.nl/~dimitri/doxygen/}}.\\   
 Eigen is the most important library for the tool's core: it is versatile, because it supports matrices and vectors of all sizes (both fixed and dynamic) with a lot of primarys operarions already implemented, it is reliable and very fast, because performance can become a real problem when the matrices have several hundreds of rows and columns.\\
@@ -117,3 +117,87 @@ Instead of calculating every single cell of the matrix, which needs a function t
 % TODO: reference to the results of the gain in speed of the method
 %       see Bernardo's email with the values
 % 
+
+\section{Tool's execution}
+As it was said before in Section \ref{structure}, there are two executable files that can be run from a terminal shell: the \emph{command line} and the \emph{XML} solver.
+
+\subsection{Command line solver}
+An example of invocation is now provided and explained:
+\begin{lstlisting}[frame=bt, numbers=none]
+  ./solver <comp_time_pmf> <inter_time_pmf> [options]
+\end{lstlisting}    
+
+The parameters accepted by the command line solver, both in short and long form, are the following:
+\begin{itemize}
+  \item \texttt{comp\_time\_pmf}: is the path to the file containing the computation time PMF.
+  \item \texttt{inter\_time\_pmf}: is the path to the file containing the interarrival time PMF.
+  \item \texttt{-t (-{}-period}): sets the server period (required).
+  \item \texttt{-q (-{}-budget)}: sets the budget (required, default value: 10000).
+  \item \texttt{-e (-{}-epsilon)}: sets the epsilon value (default value: 1e-14).
+  \item \texttt{-i (-{}-max\_iterations)}: sets the maximum number of iterations for the algorithm.
+  \item \texttt{-T (-{}-task\_period)}: sets the task period.
+  \item \texttt{-s (-{}-step)}: sets the sampling step.
+  \item \texttt{-M (-{}-max\_deadline)}: sets the maximum value for the deadline.
+  \item \texttt{-v (-{}-verbose)}: sets the verbose flag to true.
+  \item \texttt{-l (-{}-latouche)}, \texttt{-c (-{}-cyclic)}, \texttt{-o (-{}-companion)}, \texttt{-a (-{}-analytic)}: set a flag used to specify the solution algorithm. 
+  \item \texttt{-h (--help)}: shows all this possible parameters
+\end{itemize}
+ 
+\subsection{XML solver}
+An example of incovation is now provided and explained:
+\begin{lstlisting}[frame=bt, numbers=none]
+  ./xml_solver <xml_file> [options]
+\end{lstlisting}
+
+The parameters accepted by the xml solver, both in short and long form, are the following:
+\begin{itemize}
+  \item \texttt{xml\_file}: is the path the the xml file used to define the task/s.
+  \item \texttt{-v (--verbose)}: sets the verbose mode (overrides the flag specified in the XML file).
+  \item \texttt{-s (--silent)}: sets the silent mode (overrides the flag specified in the XML file).
+  \item \texttt{-h (--help)}: shows all this possible parameters.
+\end{itemize}
+
+The structure for the input file was decided in order to make the task definition easier for the user and, at the same time, more self-explaining than a list of parameters.\\
+An example of an input file that defines a single task is shown below:
+\begin{lstlisting}[frame=bt, language=XML, numbers=none]
+  <solve>
+    <task type="periodic" schedule="RR" name="0.3" algorithm="cyclic">
+      <period>100000</period>
+      <serverPeriod>25000</serverPeriod>
+      <serverBudget>7500</serverBudget>
+      <pmfComputation type="beta">
+        <step>100</step>
+        <file>test_case_1.txt</file>
+      </pmfComputation>
+      <pmfInterarrival type="beta">
+        <step>100</step>
+        <file>z_2.txt</file>
+      </pmfInterarrival>
+      <qosfun type="linear">
+        <pmin>0.01</pmin>
+        <pmax>0.95</pmax>
+        <scale>0.5</scale>
+        <offset>0.95</offset>
+      </qosfun>
+      <Delta>7500</Delta>
+      <maxDeadline>4</maxDeadline>
+    </task>
+  </solve>
+\end{lstlisting}
+
+For further details about the possible values the attributes can take, see the tool's documentation.  
+
+\section{Web interface}
+In order to be as user-friendly as possible, a \emph{web interface} has been developed. It is designed to run on a remote server running PHP and a web-server\footnote{Apache is fine, but any web-server can manage it.}, which takes care of computing and running an instance of the xml solver.\\
+The client-server paradigm allows to move the heavy computation part from a normal laptop to a machine with more computational and memory resources. This is very useful to test with a lot of different inputs, since runnin them may take several hours\footnote{The time PROSIT takes to complete its work mainly depends on the size of the transition matrix, which is highly influenced by the \emph{step} parameter used to resample the probability mass function. The lower this value is, the bigger the matrix size is.}.
+\begin{figure}[H]
+  \center{\includegraphics[width=0.5\linewidth]{index.png}}
+  \caption{The main page.}
+  \label{index}
+\end{figure}
+
+\begin{figure}[H]
+  \center{\includegraphics[width=0.5\linewidth]{modal.png}}
+  \caption{The online XML creator.}
+  \label{modal}
+\end{figure}  
