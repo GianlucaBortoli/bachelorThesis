@@ -45,7 +45,7 @@ As multiple real-time tasks can run concurrently on the same machine, the \emph{
 This means that the \( i_{th} \) task can execute for \( Q_{i}^s \) time units in every interval of length \( T_{i}^s \). The first value is called \emph{budget} and the second is the \emph{period} of the task.\\
 In this way a fraction of CPU is allocated for the task \( \tau_{i} \). This value is called \emph{bandwidth} and it is calculated as follows: \( B_{i} = \frac{Q_{i}^s}{T_{i}^s}\).\\
 As a consequence, the scheduler reserves for each task an amount of computation time \( Q_{i}^s \) in each period \( T_{i}^s \). In this way the scheduler prevents the tasks to run for more time than the selected budget and therefore each task does not need to take care of what other tasks do while they are executing in parallel.\\
-This important propriety for RR is called \textbf{temporal isolation} and it is valid as long as the following scheduling condition holds:
+This important propriety for RR is called \textbf{temporal isolation} and it is valid as long as the following scheduling condition holds \cite{realtimehandbook}:
 \begin{equation} \tag{1} \label{schedCond}
   \displaystyle\sum_{i} B_{i} =  \displaystyle\sum_{i} \frac{Q_{i}^s}{Q_{i}^s} \leq 1
 \end{equation}
