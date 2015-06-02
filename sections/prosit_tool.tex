@@ -9,10 +9,10 @@
 %   le regolarità presenti al suo interno --> dati su quanto siano migliorate le performance 
 %   dopo le modifiche (vedi mail con Bernardo per i numeri)
 % + approssimazione conservativa della PMF (sia in alto che in basso)
-% - distinzione solver da linea di comando e per xml
-%     [-] solver_command_line e descrizione parametri in input
-%     [-] xml_solver con esempi di chiamata + spiegazione struttura dell'xml da dare in input
-% - descrizione web interface e motivi per cui è stata fatta (facilità d'uso per la creazione
+% + distinzione solver da linea di comando e per xml
+%     [+] solver_command_line e descrizione parametri in input
+%     [+] xml_solver con esempi di chiamata + spiegazione struttura dell'xml da dare in input
+% + descrizione web interface e motivi per cui è stata fatta (facilità d'uso per la creazione
 %   dell'xml da zero)
 
 \section{Internal structure}\label{structure}
@@ -188,19 +188,30 @@ An example of an input file that defines a single task is shown below:
 For further details about the possible values the attributes can take, see the tool's documentation.  
 
 \section{Web interface}
-In order to be as user-friendly as possible, a \emph{web interface} has been developed. It is designed to run on a remote server running PHP and a web-server\footnote{Apache is fine, but any web-server can manage it.}, which takes care of computing and running an instance of the xml solver.\\
-The client-server paradigm allows to move the heavy computation part from a normal laptop to a machine with more computational and memory resources. This is very useful to test with a lot of different inputs, since runnin them may take several hours\footnote{The time PROSIT takes to complete its work mainly depends on the size of the transition matrix, which is highly influenced by the \emph{step} parameter used to resample the probability mass function. The lower this value is, the bigger the matrix size is.}.
+In order to be as user-friendly as possible, a \emph{web interface} has been developed. It is designed to execute on a remote server running PHP and a web-server\footnote{Apache is fine, but any other web-server can manage it.}, which takes care of computing and running an instance of the XML solver.\\
+The \textbf{client-server} paradigm allows to move the heavy computation part from a normal laptop to a machine with more computational and memory resources. This is very useful to test with a lot of different inputs, since their execution may take several hours\footnote{The time PROSIT takes to complete its work mainly depends on the size of the transition matrix, which is highly influenced by the \emph{step} parameter used to resample the PMFs for the computation and the interarrival times. The lower this value is, the bigger the matrix size is.}.
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{index.png}}
   \caption{The main page.}
   \label{index}
 \end{figure}
 
+Figure \ref{index} shows the homepage, which permits the user to upload an already existing XML file from his local storage. When some input is availabe on the server, it becomes available in the list on the bottom of the page and it is possible to select it. Once a file is selected, the \emph{"select and run"} button can be cliked to start the computation and the output is displayed in real time.\\
+Another key feature of this Graphical User Interface (GUI) is the possibility to create a task and define its parameters from scratch, by clicking the \emph{"create task"} button just below.
+
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{modal.png}}
   \caption{The XML creator.}
   \label{modal}
 \end{figure}  
+
+As it can be seen in Figure \ref{modal}, a modal windows appears on the screen. It allows the user to easily enter all the available parameters in order to customize a task\footnote{All the fields have a default value which can be canged at will. The dropdown lists on some of the attributes selection are thought to limit the possible choices only to the ones currently available in the tool.}; then he/she can save the selected configuration to an XML file on the server with the desired name. This makes the task creation phase a lot easier, especially for a non-expert user.\\
+The last feature (Figure \ref{editor}) is a live XML editing from a just uploaded file. This may be useful when the user would like to slightly modify some parameters for a task which is already on the server, without the need to modify the file locally and then upload it again on the remote machine.
+%
+% TODO: enhencments on web gui (as future works): 
+%         - email with the results when they're done
+%         - user authentication so that every user has its own space and computation power on 
+%           the server
 
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{editor.png}}
