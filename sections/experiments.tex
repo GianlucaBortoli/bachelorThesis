@@ -1,8 +1,39 @@
 %!TEX root=../thesis.tex
-\chapter{Experimental data and testing}\label{chp:experiments}
+\chapter{Testing and experimental data}\label{chp:experiments}
 
-% - deep code restructure from original tool to v2.0
-% - test to check that the new version of the tool gives correct results
+% + behaviour with changing bandwidth -> analytical vs. CR results (see paper)
+% + deep code restructure from original tool to v2.0
+% + test to check that the new version of the tool gives correct results
 %   comparing them with the ones obtained with the old tool on the same input
 % - performance enhencment in matrix creation (see Bernardo's emails) [rememer to put reference
 %   in the prosit overview chapter]
+
+Thie version of PROSIT described in this thesis brought a lot of improvements in the project structure, especially in the core classes that holds the inner task structure. Big changes in the code structure imply a complete revision of the results, even though they have been deeply checked in the "old" version of the tool.\\
+This decision was not painless at all but is was necessary: PROSIT have been firstly developed and used in some papers\footnote{An example of paper which involved PROSIT to compute the results the authors needed is \cite{probGuarantees}.} and the code structure was not an absolute priority. Then PROSIT gained interest, due to its capability to provide a good abstraction for many of the foundamental concepts in the real-time systems design.\\
+The code restructured made it necessary to check that the results provided by the "new" version of the tool does not contain any error. This phase of testing has been done running multiple tasks with different parameters on both versions and then checking the correctness of the results. Comparing the outputs it has not been found any inconsistency.\\
+The process of testing and comparison described above was done in an automated way using some bash scripts.
+
+\section{Cyclic Reduction accuracy}
+In order to compare the accuracy between the analytical result and the output given by the cyclic reduction (CR) algorithm. This was done considering a task with the same parameters except for the bandwith value. The \( Q_{s} \) value is changed to make the bandwith value in the range [35\% - 60\%]. The results of this comparison is visible in Table .
+\begin{table}[H]
+\label{comparison}
+\begin{center}
+\begin{tabular}{| l | l | l | l | l | l |}
+  \hline
+  Bandwith & 35\% & 40\% & 45\% & 50\% & 60\% \\ \hline
+  Analitic bound & 0.602 & 0.809 & 0.906 & 0.956 & 0.991 \\
+  CR algorithm & 0.773 & 0.878 & 0.929 & 0.965 & 0.992 \\ \hline
+\end{tabular}
+\caption{Probabilities for different bandwith and a 50\,\( \mu{s} \) scaling factor.}
+\end{center} 
+\end{table}
+
+The gap between the results outputted by the two different solving algorithms is significant in the first two columns, but it constantly reduces as the bandwith increases. A bandwith value lower than 40\% gives a probability result smaller than the 80\% that the deadline will be met, which is not sufficient for most of the real-time applications.\\
+This means that the CR works preatty well in \emph{heavy-traffic} conditions, namely a situation in which the system is heavily used and it is stressed by many tasks.
+
+\section{Performance enhencment in matrix creation} \label{matrixperformance}
+As described in Section \ref{matrixcreation}
+%Computing Matrix Size: 442
+%elapsed time NEW: 71413 us
+%elapsed time OLD: 121238 us
+%new method is 49825 us (~40%) faster

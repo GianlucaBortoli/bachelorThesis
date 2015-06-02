@@ -77,7 +77,7 @@ where \emph{granularity} is the desired number of bins for the resampled PMF and
   \label{resample}
 \end{figure}
 
-\subsection{Transition matrix creation}
+\subsection{Transition matrix creation} \label{matrixcreation}
 The creation of the transition matrix which is later used to apply the algorithms can result in a critical performance bottleneck, since the size can be huge\footnote{Some tests we performed developing the tool run the algorithms on a matrix with a size of nearly one thousand.}. Given that the complexity of the algorithms mentioned in Section \ref{benefits} cannot be changed, this will certainly explain the motivation behind the effort to optimize as much as possible the matrix creation phase.\\
 As explained in \ref{transitionmatrix}, the whole transition matrix has a recurrent block structure.\\ 
 The first step is to limit the matrix size to the one of \( C \), \( A_{0} \), \( A_{1} \) and \( A_{2} \), since it can be theoretically have an infinite size that makes it intractable computationally speaking. Firstly the values for \( max_{rows} \) and \( max_{cols} \) need to be computed, which represent the maximum possible number of rows and columns respectively.\\ 
@@ -112,11 +112,7 @@ The approach used to calculate the values inside the matrix is based on its inte
 
 In the \( P_{i} \) matrix described in Figure shonw above it is possible to spot an internal recurrent configuration, which is highlighted with the different names for the rows \emph{a}, \emph{b} and \emph{c}.\\
 To take advantage of this proprerty, the \emph{pre\_process()} method builds the matrix in three steps: the first one is to calculate only the first \emph{a}-row block and then copy its value until the end of it. Secondly all the \emph{transient}\footnote{This part of the matrix exists only if the task is aperiodic. In the case of a periodic one, this part of the matrix does not exists and the transition matrix is composed only by the blocks named with \emph{a} and \emph{c}.} rows denoted with the letter \emph{b} are calculated, cell by cell. In the \emph{c} block, as happened for the first one, only the first row is calculated and then it is copied to the following one shifted right by one.\\
-Instead of calculating every single cell of the matrix, which needs a function to be called \( max_{v}^{2} \) times, opting for a solution like this one was not an option. The time needed to calculate the entire matrix with the new method decreased of around 40\%, even though the overall complexity is still an \( O(n^{2}) \). For more details about the results, see Chapter \ref{????????}.
-%
-% TODO: reference to the results of the gain in speed of the method
-%       see Bernardo's email with the values
-% 
+Instead of calculating every single cell of the matrix, which needs a function to be called \( max_{v}^{2} \) times, opting for a solution like this one was not an option. The time needed to calculate the entire matrix with the new method decreased of around 40\%, even though the overall complexity is still an \( O(n^{2}) \). For more details about the results, see Chapter \ref{matrixperformance}.
 
 \section{Tool's execution}
 As it was said before in Section \ref{structure}, there are two executable files that can be run from a terminal shell: the \emph{command line} and the \emph{XML} solver.
