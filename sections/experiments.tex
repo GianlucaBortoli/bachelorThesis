@@ -5,7 +5,7 @@
 % + deep code restructure from original tool to v2.0
 % + test to check that the new version of the tool gives correct results
 %   comparing them with the ones obtained with the old tool on the same input
-% - performance enhencment in matrix creation (see Bernardo's emails) [rememer to put reference
+% + performance enhencment in matrix creation (see Bernardo's emails) [rememer to put reference
 %   in the prosit overview chapter]
 
 Thie version of PROSIT described in this thesis brought a lot of improvements in the project structure, especially in the core classes that holds the inner task structure. Big changes in the code structure imply a complete revision of the results, even though they have been deeply checked in the "old" version of the tool.\\
@@ -28,14 +28,24 @@ In order to compare the accuracy between the analytical result and the output gi
 \end{center} 
 \end{table}
 
-\footnotetext{{The results presented in the table above were evaluated on an Intel Core i7 with 16GB of RAM.}}
-
 The gap between the results outputted by the two different solving algorithms is significant in the first two columns, but it constantly reduces as the bandwith increases. A bandwith value lower than 40\% gives a probability result smaller than the 80\% that the deadline will be met, which is not sufficient for most of the real-time applications.\\
 This means that the CR works preatty well in \emph{heavy-traffic} conditions, namely a situation in which the system is heavily used and it is stressed by many tasks.
 
 \section{Performance enhencment in matrix creation} \label{matrixperformance}
-As described in Section \ref{matrixcreation}
-%Computing Matrix Size: 442
-%elapsed time NEW: 71413 us
-%elapsed time OLD: 121238 us
-%new method is 49825 us (~40%) faster
+As described in Section \ref{matrixcreation}, the efficiency of the matrix creation has been highly improved. The table below shows a benchmark for an example matrix.
+\begin{table}[H]
+\label{benchmark}
+\begin{center}
+\begin{tabular}{| l | l |}
+  \hline
+  Matrix size & 442 \\ \hline
+  Elapsed time "old" & 121238\( \,\mu{s} \) \\ \hline
+  Elapsed time "new" & 71413\( \,\mu{s} \) \\ \hline
+\end{tabular}
+\caption[]{Elapsed time for the different algorithms\footnotemark.}
+\end{center}
+\end{table}
+
+\footnotetext{{The results presented were evaluated on an Intel Core i7-3537U CPU @ 2.00GHz with 8GB of RAM.}}
+
+It is possible to see how much the method developed and discussed here is faster: the computation takes nearly 50000\(\,\mu{s} \) less with a matrix size of only 442 rows/columns, which represents a boost of about 40\%.
