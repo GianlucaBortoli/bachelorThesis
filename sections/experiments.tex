@@ -13,7 +13,7 @@ This decision was not painless at all but is was necessary: PROSIT have been fir
 The code restructured made it necessary to check that the results provided by the "new" version of the tool does not contain any error. This phase of testing has been done running multiple tasks with different parameters on both versions and then checking the correctness of the results. Comparing the outputs it has not been found any inconsistency.\\
 The process of testing and comparison described above was done in an automated way using some bash scripts.
 
-\section{Cyclic Reduction accuracy}
+\section{Cyclic Reduction accuracy} \label{craccuracy}
 In order to compare the accuracy between the analytical result and the output given by the cyclic reduction (CR) algorithm. This was done considering a task with the same parameters except for the bandwith value. The \( Q_{s} \) value is changed to make the bandwith value in the range [35\% - 60\%]. The results of this comparison is visible in Table .
 \begin{table}[H]
 \label{comparison}
@@ -24,9 +24,11 @@ In order to compare the accuracy between the analytical result and the output gi
   Analitic bound & 0.602 & 0.809 & 0.906 & 0.956 & 0.991 \\
   CR algorithm & 0.773 & 0.878 & 0.929 & 0.965 & 0.992 \\ \hline
 \end{tabular}
-\caption{Probabilities for different bandwith and a 50\,\( \mu{s} \) scaling factor.}
+\caption[]{Probabilities for different bandwith and a 50\,\( \mu{s} \) scaling factor\footnotemark.}
 \end{center} 
 \end{table}
+
+\footnotetext{{The results presented in the table above were evaluated on an Intel Core i7 with 16GB of RAM.}}
 
 The gap between the results outputted by the two different solving algorithms is significant in the first two columns, but it constantly reduces as the bandwith increases. A bandwith value lower than 40\% gives a probability result smaller than the 80\% that the deadline will be met, which is not sufficient for most of the real-time applications.\\
 This means that the CR works preatty well in \emph{heavy-traffic} conditions, namely a situation in which the system is heavily used and it is stressed by many tasks.

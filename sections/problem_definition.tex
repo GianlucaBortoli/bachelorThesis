@@ -13,7 +13,7 @@
 % + the benefits of modeling as QBDP
 
 \section{Task model}
-It is considered a set of real-time tasks \( \{\tau_{i}\} \) which share a processing unit (CPU), where every task consists of a stream of jobs \( J_{i,\,k} \).\\
+A set of real-time tasks \( \{\tau_{i}\} \) which share a processing unit (CPU) is considered, where every task consists of a stream of jobs \( J_{i,\,k} \).\\
 Each job \( J_{i,\,k} \) is defined as a touple \( \left(r_{i,\,k}, \;f_{i,\,k}, \;c_{i,\,k}\right) \) in which:
 \begin{itemize}
   \item \( r_{i,\,k} \) is the \emph{release} time for the \( k_{th} \) instance of the \( i_{th} \) task. In other words this is the time in which the job arrives and becomes elegible for execution by the scheduler and thus for the CPU.
@@ -28,49 +28,49 @@ A deadline is said to be respected if \( f_{i,\,k} \leq d_{i,\,k} \) and missed 
 
 \section{Different types of tasks}
 There are three types of tasks: \emph{periodic}, \emph{aperiodic} and \emph{sporadic}.\\
-A periodic task owns a regular structure and is triggered every period \( T_{i} \). Its lifetime is similar to a cycle which is activated at time \( r_{i,\,k} \), executes for a period \( c_{i,\,k} \) and then waits the next period to start running again.\\
-The second class is composed of these tasks which are not characterize by periodic arrivals. Moreover a minimum interarrival time between different tasks does not exists and, generally speaking, they have not any recurrent structure. They are used to model tasks which occur rarely and are irregular throughout the time.\\
-The last type is very similar to a periodic task, because both have a minimin interarrival time between each activation, even though it is not always the same. A sporadic task is triggered by an external event which needs the task to be activated, not using a timer as happens for a periodic one.\\
-The work that will be described in following chapters takes into consideration only the first two types of tasks.
+A periodic task owns a regular structure and is triggered every period \( T_{i} \). Its lifetime is similar to a cycle which is activated at time \( r_{i,\,k} \), executes for a period \( c_{i,\,k} \) and then waits the next period \( T_{i}+1 \) to start running again.\\
+The second class is composed of these tasks which are not characterize by periodic arrivals. Moreover a minimum inter-arrival time between different tasks does not exists and, generally speaking, they have not any recurrent structure. They are used to model tasks which occur rarely and are irregular throughout the time.\\
+The last type is very similar to a periodic task, because both have a minimin inter-arrival time between each activation, even though it is not always the same. A sporadic task is triggered by an external event which needs the task to be activated, not using a timer (namely the period) as happens for a periodic one.\\
+The work described in following chapters takes into consideration the first two types of tasks, which are the most usual and useful ones.
 
 \section{Scheduler}
-Tasks do not run on the bare computer hardware: the Operating System (OS) creates the illusion for each task to have a virtual CPU where they can execute on their own, without the need to share it with anyone else. This make them believe that they are running concurrently and in parallel on the same machine\footnote{This is true if we think of a single CPU with one core. Modern CPUs are multi-core, which gives the possibility to actually run multiple tasks at the same time, with an upper bound for the number of process to be executed in parallel given by the number of cores.}.\\
-Since it is possible to run only one task at a time on a single CPU, they need to alternate each other in order to give everyone the possibility to get their work done. Here is where the \emph{task scheduler} starts its job, which is responsible for generating a \emph{schedule}, starting from a set of tasks \( \{\tau_{i}\} \).\\
-There are several scheduling algorithm which can be used to select at every instant \emph{t} which is the task to be executed. More in general it is possible to say that a scheduling algorithm \emph{A} generates a schedule \( \sigma_{A}\left(t\right) \) starting from a set of tasks \( \{\tau_{i}\} \).\\
+Tasks do not run on bare computer hardware: the Operating System (OS) creates the illusion for each task to have a virtual CPU where they run alone. This make them believe that they are running simultaneously on the same machine\footnote{This is true if we think of a single CPU with one core. Modern CPUs are multi-core, which gives the possibility to actually run multiple tasks at the same time, with an upper bound for the number of process to be executed in parallel given by the number of cores.}.\\
+Since it is possible to run only one task at a time on a single CPU, they need to alternate each other in order to give everyone the possibility to get their work done. Here is where the \emph{task scheduler} starts its job, which is responsible for scheduling a set of tasks \( \{\tau_{i}\} \).\\
+There exists several scheduling algorithm that can be used to select at every instant \emph{t} which is the task to be executed. More in general it is possible to say that a scheduling algorithm \emph{A} generates a schedule \( \sigma_{A}\left(t\right) \) starting from a set of tasks \( \{\tau_{i}\} \).\\
 At the end of the processing phase a schedulability test is performed which checks if the schedule \( \sigma_{A}\left(t\right) \) generated by the algorithm \emph{A} guarantees that every deadline (probabilistic or not) is met.\\
-There are lots of scheduling algorithm which can be used, such as rate monotonic (RM), earliest deadline first (EDF) and many others, but we concentrated on the \emph{sched\_deadline} algorithm, which is the one currently used in the Linux kernel\footnote{\emph{Sched\_deadline} became the default scheduler from the 3.14 version of the kernel; it is also known as Complete Fair Queuing (CFQ) and it is still the one used in the latest kernel available on \url{www.kernel.org}. The old one was a modified version of the EDF algorithm.}.
+Some of the most famous in the computer science literature are rate monotonic (RM), Earliest Deadline First (EDF). We concentrated on the \emph{sched\_deadline} algorithmt which is the one currently used in the Linux kernel\footnote{\emph{Sched\_deadline} became the default scheduler from the 3.14 version of the kernel. It is also known as Complete Fair Queuing (CFQ) and it is still the one used in the latest kernel available on \url{www.kernel.org}. The old one was a modified version of the EDF algorithm. An overview can be found at \url{http://lxr.free-electrons.com/source/Documentation/scheduler/sched-deadline.txt}}.
 
 \section{Resource Reservation scheduling}
 As multiple real-time tasks can run concurrently on the same machine, the \emph{resource reservation} (RR) algorithm allows to associate to a single task \( \tau_{i} \) a \emph{reservation} \( \left(Q_{i}^s,\,T_{i}^s\right) \).\\ 
 This means that the \( i_{th} \) task can execute for \( Q_{i}^s \) time units in every interval of length \( T_{i}^s \). The first value is called \emph{budget} and the second is the \emph{period} of the task.\\
 In this way a fraction of CPU is allocated for the task \( \tau_{i} \). This value is called \emph{bandwidth} and it is calculated as follows: \( B_{i} = \frac{Q_{i}^s}{T_{i}^s}\).\\
-As a consequence, the scheduler reserves for each task an amount of computation time \( Q_{i}^s \) in each period \( T_{i}^s \). In this way the scheduler prevents the tasks to run for more time than the selected budget and therefore each task does not need to take care of what other tasks do while they are executing in parallel.\\
+As a consequence, the scheduler reserves for each task an amount of computation time \( Q_{i}^s \) in each period \( T_{i}^s \). In this way the scheduler prevents the tasks to run for more time than the selected budget and therefore each task does not need to take care of what other tasks do while they are executing concurrently.\\
 This important propriety for RR is called \textbf{temporal isolation} and it is valid as long as the following scheduling condition holds \cite{realtimehandbook}:
 \begin{equation} \tag{1} \label{schedCond}
-  \displaystyle\sum_{i} B_{i} =  \displaystyle\sum_{i} \frac{Q_{i}^s}{Q_{i}^s} \leq 1
+  \displaystyle\sum_{i} B_{i} =  \displaystyle\sum_{i} \frac{Q_{i}^s}{T_{i}^s} \leq 1
 \end{equation}
 
-This gives a huge advantage for the designer, since it is possible to analyse each task on its own, without careing about what other tasks are doing at the same time \cite{probGuarantees}.
+This gives a huge advantage for the designer, since it is possible to analyse each task on its own, without taking care of other tasks \cite{probGuarantees}.
 
 \section{Quality function}
 It is necessary to define also a function which is used to compute the resulting quality of service, given the scheduling parameters for a task.\\
 The function assumes that there exists a dependency between the scheduling parameters and the actual quality. This is not always true and it can be very difficult to find \cite{prosit}.\\
-A possibility is to compute it as a function of the distribution of the delayed tasks. For example, thinking about a video streaming service: if decoding a frame takes too much time and it leads to a deadline miss, that frame is not displayed and the following job starts decoding the next frame. Every non-decoded frame within the deadline entails a frame not shown on the screen and, consequently, a decrease of the frame rate and of the QoS. 
+A possibility is to compute it as a function of the distribution of the delayed tasks. For example, thinking about a video streaming service: if decoding a frame takes too much time and it leads to a deadline miss, that frame would not be displayed and the following job would start decoding the next frame. Every non-decoded frame within the deadline leads to a frame not shown on the screen and, consequently, a decrease of the frame rate and of the QoS. 
 
 \section{Goal}
-In view of the last considerations, the \emph{analysis} problem we address can be stated as follows: given a series of real-time tasks with a PMF \( U(c) = \Pr\{c_{i,\,j} = c\} \) which describes the stochastic computation time, a PMF \( U(i) = \Pr\{i_{i,\,j} = i\} \) for the interarrival time, a QoS function and the scheduling parameters mentioned so far, say if the set of tasks is schedulable. If it is so, the resulting QoS is computed.\\
-For the analysis problem, the scheduling parameters are assumed to be selected by the designer.
+In view of the last considerations, the \emph{analysis} problem we address can be stated as follows: given a series of real-time tasks with a PMF \( U(c) = \Pr\{c_{i,\,j} = c\} \) which describes the stochastic computation time, a PMF \( U(i) = \Pr\{i_{i,\,j} = i\} \) for the inter-arrival time, a QoS function and the scheduling parameters mentioned so far, say if the set of tasks is schedulable or not. If it is so, the resulting QoS is computed.\\
+For the analysis problem, the scheduling parameters are assumed to be selected by the user.
 
 \section{RR modeled as a Markov Chain}
 Let me introduce some of the notations used from now on:
 \begin{itemize}
-  \item \( F_{U}(c) = \displaystyle\sum_{h\,=\,c_{\,min}}^{c} U(c) \) denotes the Cumulative Distribution Function (CDF) for the computation time. For the seek of simplicity, it is assumed that the server period is an integer submultiple of the task period (\( T = NT^{s} \)).
-  \item \( d_{k}^{s} \) denotes the latest scheduling deadline used for the job \( J_{k} \). This is an upper bound for \( f_{i,\,k} \): if Equation (\ref{schedCond}) is respected, therefore \( f_{i,\,k} \leq d_{k}^{s} \).
+  \item \( F_{U}(c) = \displaystyle\sum_{h\,=\,c_{\,min}}^{c} U(c) \) denotes the Cumulative Distribution Function (CDF) for the computation time. For the seek of simplicity, it is assumed that the server\footnote{This model assumes the knowledge of the requirements of each task and the use a reservation-based scheduler, such as the Constant Bandwidth Server (CBS) \cite{pipelines}. The more general approach is to model the system as a queue with a single server.} period is an integer submultiple of the task period (\( T = NT^{s} \)).
+  \item \( d_{k}^{s} \) denotes the latest scheduling deadline used for the job \( J_{k} \). This is an upper bound for \( f_{i,\,k} \): if Equation (\ref{schedCond}) is respected \( f_{i,\,k} \leq d_{k}^{s} \).
   \item \( \delta_{k} = d_{k}^{s} - r_{k} \) represents an upper bound for the response time of the job.
 \end{itemize}
 
-The values \( \delta_{k} \) can take are only in the discrete set of the multiples of the task period and \( \Pr\,\{\delta_{k} < D\} \) is a lower bound for the probability to meet the deadline.\\
-The rule \( \delta_{k} \) follows is described in this way:
+The values \( \delta_{k} \) vary only in the discrete set of the multiples of the task period and \( \Pr\,\{\delta_{k} < D\} \) is a lower bound for the probability to meet the deadline.\\
+The rule \( \delta_{k} \) is described in this way:
 \begin{equation} \tag{2} \label{markovProcess}
 \begin{split}
   v_{0} &= c_{0}\\
@@ -80,11 +80,11 @@ The rule \( \delta_{k} \) follows is described in this way:
 \end{equation}
 
 The variable \( v_{k} \) cannot be measured empirically, but it is the amount of backlogged computation time that has not be served by the scheduler yet, but it must be taken into account when a new job arrives.\\
-Since the computation time for each job is assumed to be an i.i.d. stochastic variable, the the model shown by Equation \ref{markovProcess} represents a \emph{Discrete-Time Markov Chain} (DTMC) \cite{probGuarantees} \cite{effRobustGuarantees}.\\
+Since the computation time for each job is assumed to be an i.i.d. stochastic variable, the model shown by Equation \ref{markovProcess} represents a \emph{Discrete-Time Markov Chain} (DTMC) \cite{probGuarantees} \cite{effRobustGuarantees}.\\
 The states of the DTMC are determined by the values \( v_{k} \) can take, while the transitions are the values of the PMF for the computation time \( U(c) \).
 
 \section{Markov Chains concepts}
-A Discrete-Time Markov Process (DTMP) \( \{X_{n}\} \) is a stochastic process which describes transitions between one state to another. It is composed by a set of \emph{states} and the \emph{thansitions}.
+A Discrete-Time Markov Process (DTMP) \( \{X_{n}\} \) is a stochastic process which describes transitions between one state to another. It is composed by a set of \emph{states} and the \emph{transitions}.
 \begin{figure}[H]
   \center{\includegraphics[width=0.2\linewidth]{automaton.png}}
   \caption{Graphical interpretation of a simple Markov chain.}
@@ -137,10 +137,10 @@ A DTMC can be modeled as a \emph{Quasi-Birth-Death Process} (QDBP) if and only i
   \end{bmatrix}
 \end{equation*}
 
-where \( C \), \( A_{0} \), \( A_{1} \) e \( A_{2} \) are matrices. If they reduce to a scalar value, it is a standard Birth-Death Process (BDP).
+where \( C \), \( A_{0} \), \( A_{1} \) e \( A_{2} \) are matrices. If they reduce to a scalar value, it is a standard Birth-Death Process (BDP) \cite{probGuarantees}.
 
 \section{Benefits of QBDP} \label{benefits}
 Modeling the problem described in this chapter as a QBDP makes it more tractable from a numerical point of view. Analytical bounds and approximations are described in detail in \cite{probGuarantees}.\\
-There are also many algorithms that can be used for calculating the steady state distribution \( \overset{\sim}{\pi} \) which don't require to calculare the exact solution of the stochastic process, but only an approximation of the result. The difference between the results of the analitical solution and the approximated one is such that it is not worth the time spent to calculate the exact solution\footnote{In cases similar to this one, in which there is the possibility to calculate the analitycal solution (which has no computation error or approximation), sometimes there exists some algorithm that approximates it in a faster way. It is always a tradeoff between the computation time and the amount of approximation in the solution result}.\\
-The ones implemented in \emph{PROSIT} are the \emph{cyclic reduction} \cite{cyclic}, the \emph{latouche} \cite{latouche}, the \emph{companion} \cite{probGuarantees} and the \emph{analitycal} \cite{probGuarantees} algorithms.\\
-More details and their implementation can be found on the tool's documentation.
+There are also many algorithms that can be used for calculating the steady state distribution \( \overset{\sim}{\pi} \) which don't require to calculare the exact solution of the stochastic process, but only an approximation of the result. The difference between the results of the analitical solution and the approximated one is such that it is not worth the time spent to calculate the exact solution\footnote{In cases similar to this one, in which there is the possibility to calculate the analitycal solution (which has no computation error or approximation), sometimes there exists an algorithm that approximates it in a faster way. It is always a tradeoff between the computation time and the amount of approximation in the solution result}. See Section \ref{craccuracy} for the accuracy comparison.\\
+PROSIT implements \emph{cyclic reduction} \cite{cyclic}, \emph{latouche} \cite{latouche}, \emph{companion} \cite{probGuarantees} and \emph{analitycal} \cite{probGuarantees} algorithms.\\
+More details on their implementation can be found in the tool's documentation.
