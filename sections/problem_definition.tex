@@ -80,7 +80,7 @@ The rule \( \delta_{k} \) is described in this way:
 \end{equation}
 
 The variable \( v_{k} \) cannot be measured empirically, but it is the amount of backlogged computation time that has not be served by the scheduler yet, but it must be taken into account when a new job arrives.\\
-Since the computation time for each job is assumed to be an i.i.d. stochastic variable, the model shown by Equation \ref{markovProcess} represents a \emph{Discrete-Time Markov Chain} (DTMC) \cite{probGuarantees} \cite{effRobustGuarantees}.\\
+Since the computation time for each job is assumed to be an i.i.d. stochastic variable, the model shown by Equation \ref{markovProcess} represents a \emph{Discrete-Time Markov Chain} (DTMC) \cite{effRobustGuarantees} \cite{probGuarantees}.\\
 The states of the DTMC are determined by the values \( v_{k} \) can take, while the transitions are the values of the PMF for the computation time \( U(c) \).
 
 \section{Markov Chains concepts}
@@ -142,5 +142,5 @@ where \( C \), \( A_{0} \), \( A_{1} \) e \( A_{2} \) are matrices. If they redu
 \section{Benefits of QBDP} \label{benefits}
 Modeling the problem described in this chapter as a QBDP makes it more tractable from a numerical point of view. Analytical bounds and approximations are described in detail in \cite{probGuarantees}.\\
 There are also many algorithms that can be used for calculating the steady state distribution \( \overset{\sim}{\pi} \) which don't require to calculare the exact solution of the stochastic process, but only an approximation of the result. The difference between the results of the analitical solution and the approximated one is such that it is not worth the time spent to calculate the exact solution\footnote{In cases similar to this one, in which there is the possibility to calculate the analitycal solution (which has no computation error or approximation), sometimes there exists an algorithm that approximates it in a faster way. It is always a tradeoff between the computation time and the amount of approximation in the solution result}. See Section \ref{craccuracy} for the accuracy comparison.\\
-PROSIT implements \emph{cyclic reduction} \cite{cyclic}, \emph{latouche} \cite{latouche}, \emph{companion} \cite{probGuarantees} and \emph{analitycal} \cite{probGuarantees} algorithms.\\
+PROSIT implements \emph{cyclic reduction} \cite{cyclic}, \emph{logarithmic reduction} \cite{latouche} (also known as Latouche-Ramaswami), \emph{companion} \cite{probGuarantees} and \emph{analitycal} \cite{probGuarantees} algorithms.\\
 More details on their implementation can be found in the tool's documentation.

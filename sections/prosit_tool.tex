@@ -68,7 +68,7 @@ The solver invokes these functions in the order they were presented.
 Before building the transition matrix, the values of the PMFs for both computation and interarrival times need to be \emph{resampled} to an integer value\footnote{In the probabilistic deadline \emph{(t,p)}, both values can be expressed as floating point numbers; then, internally, PROSIT approximate them to an integer since we aim to output an estimate.}, in order to obtain a \emph{conservative approximation}.\\
 The way of reasoning is the same for both cases, but with a very important detail: a computation time has to be approximated to a greater value, while an interarrival time to a lower one.\\ 
 This has to be done in this way because the tool must always be placed into a \emph{worst-case scenario}. The resampling function returns a pointer to the resampled PMF object and it is defined as follows:
-\begin{lstlisting}[frame=bt]
+\begin{lstlisting}[frame=bt, numbers=none]
   pmf * resample(int granularity, bool direction);
 \end{lstlisting}
 
@@ -83,18 +83,18 @@ where \emph{granularity} is the desired number of bins for the resampled PMF and
 The creation of the transition matrix which is later used to apply the algorithms can result in a critical performance bottleneck, since the size can be huge\footnote{Some tests we performed developing the tool run the algorithms on a matrix with a size of nearly one thousand.}.\\ 
 Given that the complexity and the overall performance of the algorithms mentioned in Section \ref{benefits} cannot be changed, this will certainly explain the motivation behind the effort to optimize as much as possible the matrix creation phase.\\
 As explained in \ref{transitionmatrix}, the whole transition matrix has a recurrent block structure.\\ 
-The first step is to limit the matrix size to the one of \( C \), \( A_{0} \), \( A_{1} \) and \( A_{2} \), since it can be theoretically have an infinite size that makes it intractable computationally speaking. Firstly the values for \( max_{rows} \) and \( max_{cols} \) need to be computed, which represent the maximum possible number of rows and columns respectively.\\ 
+The first step is to limit the matrix size to the one of \( C \), \( A_{0} \), \( A_{1} \) and \( A_{2} \), since it can be theoretically have an infinite size that makes it intractable computationally speaking. Firstly the \( max_{rows} \) and \( max_{cols} \) values need to be computed, which represent the maximum possible number of rows and columns respectively.\\ 
 They can be evaluated as follows: 
 \begin{equation*}
 \begin{split}
-  max_{rows} &= i.get_min() * Q + 1 \\
-  max_{cols} &= c.get_max() + 1
+  max_{rows} &= i.get\_min() * Q + 1 \\
+  max_{cols} &= c.get\_max() + 1
 \end{split}
 \end{equation*}
 
 where \( i.get\_min() \) returns the minimum value for the interarrival time PMF, \( c.get\_max() \) returns the maximum value for the computation time PMF and \( Q \) is the budget associated with the given task.\\
-Then, after taking \( max_{v} = max\{max_{rows}\,,\,max_{cols}\} \) as the size of one of the above mentioned matrices, it is possible to know that the size of the whole transition matrix is \( 2 \times max_{v} \).\\
-The approach used to calculate the values inside the matrix is based on its internal structure, which is in proven\cite{pipelines} to be like:
+Then, after taking \( max_{v} = max\{max_{rows}\,,\,max_{cols}\} \) as the size of one of the above mentioned matrices, it is possible to know that the size of the whole transition matrix is equal to \( 2 \times max_{v} \).\\
+The approach used to calculate the values inside the matrix is based on its internal structure, which is proven in \cite{pipelines} to be like:
 \begin{figure}[H] \label{matrixstructure}
 \begin{equation*} 
   P_{i} = 
@@ -113,12 +113,12 @@ The approach used to calculate the values inside the matrix is based on its inte
 \caption{The transition matrix for the generic \( i^{th} \) stage.}
 \end{figure}
 
-In the \( P_{i} \) matrix described in the figure shown above it is possible to spot an internal recurrent configuration, which is highlighted with the different names for the rows \emph{a}, \emph{b} and \emph{c}.\\
-To take advantage of this proprerty, the \emph{pre\_process()} method builds the matrix in three steps: the first one is to calculate only the first row and then copy its value until the end of the \emph{a}-row block. Secondly all the \emph{transient}\footnote{This part of the matrix exists only if the task is aperiodic. In the case of a periodic one, this part of the matrix does not exists and the transition matrix is composed only by the blocks named with \emph{a} and \emph{c}.} rows denoted with the letter \emph{b} are calculated, cell by cell. In the \emph{c} block, as happened for the first one, only the first row is calculated and then it is copied to the following one shifted right by one.\\
-Instead of calculating every single cell of the matrix, which needs a function\footnote{The complexity of the \emph{matrix\_prob\_ts} function is \( O(n) \), \emph{n} being the size of the vector for the computation time PMF.} to be called \( max_{v}^{2} \) times, opting for a solution like this was not an option. The time needed to calculate the entire matrix with the new method decreased of around 40\%, even though the overall complexity is still an \( O(n^{2}) \). For more details about the results, see Section \ref{matrixperformance}.
+The figure shown above describes the \( P_{i} \) matrix where it is possible to spot an internal recurrent configuration, which is highlighted with the different names for the rows \emph{a}, \emph{b} and \emph{c}.\\
+To take advantage of this proprerty, the \emph{pre\_process()} method builds the matrix in \textbf{three steps}: the first one is to calculate only the first row and then copy its value until the end of the \emph{a} block. Secondly all the \emph{transient}\footnote{This part of the matrix exists only if the task is aperiodic. In the case of a periodic one, this part of the matrix does not exists and the transition matrix is composed only by the blocks named with \emph{a} and \emph{c}.} rows denoted with the letter \emph{b} are calculated, cell by cell. In the \emph{c} block, as happened for the first one, only the first row is calculated and then it is copied to the following one shifted right by one.\\
+Instead of calculating every single cell of the matrix, which needs a function\footnote{The complexity of the \emph{matrix\_prob\_ts} function is \( O(n) \), \emph{n} being the size of the vector for the computation time PMF.} to be called \( max_{v}^{2} \) times, exploiting as much as possible the internal structure of the matrix \( P_{i} \). The time needed to calculate the entire matrix with the new method decreased of around 40\%, even though the overall complexity is still an \( O(n^{2}) \). For more details about the results, see Section \ref{matrixperformance}.
 
 \section{Tool's execution}
-As it was said before in Section \ref{structure}, there are two executable files that can be run from a terminal shell: the \emph{command line} and the \emph{XML} solver.
+As it was said before in Section \ref{structure}, there are two executable files that can be run from a terminal shell: the \emph{command line} and the \emph{XML} solver. They provide two slightly different interfaces for the tool that are described in detail in this section.
 
 \subsection{Command line solver}
 An example of invocation is now provided and explained:
@@ -126,20 +126,20 @@ An example of invocation is now provided and explained:
   ./solver <comp_time_pmf> <inter_time_pmf> [options]
 \end{lstlisting}    
 
-The parameters accepted by the command line solver, both in short and long form, are the following:
+The parameters accepted by the \textbf{command line} solver, both in short and long form, are the following:
 \begin{itemize}
   \item \texttt{comp\_time\_pmf}: is the path to the file containing the computation time PMF.
   \item \texttt{inter\_time\_pmf}: is the path to the file containing the interarrival time PMF.
-  \item \texttt{-t (-{}-period}): sets the server period (required).
-  \item \texttt{-q (-{}-budget)}: sets the budget (required, default value: 10000).
-  \item \texttt{-e (-{}-epsilon)}: sets the epsilon value (default value: 1e-14).
+  \item \texttt{-t (-{}-period}): sets the server period; it is a required argument.
+  \item \texttt{-q (-{}-budget)}: sets the budget; it is a required argument and the default value is 10000.
+  \item \texttt{-e (-{}-epsilon)}: sets the epsilon value used as threshold for the error approximation; the default value is \( 1 \times 10^{-14} \).
   \item \texttt{-i (-{}-max\_iterations)}: sets the maximum number of iterations for the algorithm.
   \item \texttt{-T (-{}-task\_period)}: sets the task period.
-  \item \texttt{-s (-{}-step)}: sets the sampling step.
+  \item \texttt{-s (-{}-step)}: sets the step for the resampling function.
   \item \texttt{-M (-{}-max\_deadline)}: sets the maximum value for the deadline.
-  \item \texttt{-v (-{}-verbose)}: sets the verbose flag to true.
+  \item \texttt{-v (-{}-verbose)}: sets the verbose flag; it ensures that the output gives more information to the user during the execution steps.
   \item \texttt{-l (-{}-latouche)}, \texttt{-c (-{}-cyclic)}, \texttt{-o (-{}-companion)}, \texttt{-a (-{}-analytic)}: set a flag used to specify the solution algorithm. 
-  \item \texttt{-h (--help)}: shows all this possible parameters
+  \item \texttt{-h (--help)}: shows all the possible parameters
 \end{itemize}
  
 \subsection{XML solver}
@@ -150,10 +150,10 @@ An example of incovation is now provided and explained:
 
 The parameters accepted by the xml solver, both in short and long form, are the following:
 \begin{itemize}
-  \item \texttt{xml\_file}: is the path the the xml file used to define the task/s.
-  \item \texttt{-v (--verbose)}: sets the verbose mode (overrides the flag specified in the XML file).
-  \item \texttt{-s (--silent)}: sets the silent mode (overrides the flag specified in the XML file).
-  \item \texttt{-h (--help)}: shows all this possible parameters.
+  \item \texttt{xml\_file}: is the path to the xml file used to define the task/s.
+  \item \texttt{-v (--verbose)}: sets the verbose mode, as happens in the command line; it overrides the flag specified in the XML file.
+  \item \texttt{-s (--silent)}: sets the silent mode; it overrides the flag specified in the XML file.
+  \item \texttt{-h (--help)}: shows all the possible parameters.
 \end{itemize}
 
 The structure for the input file was decided in order to make the task definition easier for the user and, at the same time, more self-explaining than a list of parameters.\\
@@ -184,19 +184,20 @@ An example of an input file that defines a single task is shown below:
   </solve>
 \end{lstlisting}
 
+To define multiple tasks into a single configuration file, the user can simply utilize several \emph{task} tags inside the global \emph{solve} tag.\\ 
 For further details about the possible values the attributes can take, see the tool's documentation.  
 
 \section{Web interface}
-In order to be as user-friendly as possible, a \emph{web interface} has been developed. It is designed to execute on a remote server running PHP and a web-server\footnote{Apache is fine, but any other web-server can manage it.}, which takes care of computing and running an instance of the XML solver.\\
-The \textbf{client-server} paradigm allows to move the heavy computation part from a normal laptop to a machine with more computational and memory resources. This is very useful to test with a lot of different inputs, since their execution may take several hours\footnote{The time PROSIT takes to complete its work mainly depends on the size of the transition matrix, which is highly influenced by the \emph{step} parameter used to resample the PMFs for the computation and the interarrival times. The lower this value is, the bigger the matrix size is.}.
+In order to be as user-friendly as possible, a \emph{web interface} has been developed. It is designed to execute on a remote server running PHP and a web-server\footnote{Apache is fine, but any other web-server can manage it.}, which takes care of executing an instance of the XML solver.\\
+The \textbf{client-server} paradigm allows to move the heavy computation part from a normal laptop to a machine with more computational and memory resources. This is very useful to test with many different inputs, since their execution may take several hours\footnote{The time PROSIT takes to complete its work mainly depends on the size of the transition matrix, which is highly influenced by the \emph{step} parameter used to resample the PMFs for the computation and the interarrival times. The lower this value is, the bigger is the resulting matrix.}.
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{index.png}}
   \caption{The main page.}
   \label{index}
 \end{figure}
 
-Figure \ref{index} shows the homepage, which permits the user to upload an already existing XML file from his local storage. When some input is availabe on the server, it becomes available in the list on the bottom of the page and it is possible to select it. Once a file is selected, the \emph{"select and run"} button can be cliked to start the computation and the output is displayed in real time.\\
-Another key feature of this Graphical User Interface (GUI) is the possibility to create a task and define its parameters from scratch, by clicking the \emph{"create task"} button just below.
+Figure \ref{index} shows the homepage: it permits the user to upload XML file from his computer. When some input is availabe on the server, it is shown in the list on the bottom of the page, where the user can select one. Once a file is selected, the \emph{"select and run"} button can be cliked to start the computation and then the output is displayed in real time.\\
+Another key feature of this Graphical User Interface (GUI) is the possibility to create a task and define its parameters from scratch, by clicking the \emph{"create task"}.
 
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{modal.png}}
@@ -204,8 +205,8 @@ Another key feature of this Graphical User Interface (GUI) is the possibility to
   \label{modal}
 \end{figure}  
 
-As it can be seen in Figure \ref{modal}, a modal windows appears on the screen. It allows the user to easily enter all the available parameters in order to customize a task\footnote{All the fields have a default value which can be canged at will. The dropdown lists on some of the attributes selection are thought to limit the possible choices only to the ones currently available in the tool.}; then he/she can save the selected configuration to an XML file on the server with the desired name. This makes the task creation phase a lot easier, especially for a non-expert user.\\
-The last feature (Figure \ref{editor}) is a live XML editing from a just uploaded file. This may be useful when the user would like to slightly modify some parameters for a task which is already on the server, without the need to modify the file locally and then upload it again on the remote machine.
+As it can be seen in Figure \ref{modal}, a modal windows appears on the screen. It allows the user to easily enter all the parameters to customize the task\footnote{All the fields have a default value which can be canged at will. The dropdown lists on some of the attributes selection are thought to limit the possible choices only to the ones currently available in the tool.}; then he/she can save the selected configuration to an XML file directly on the server with the desired name. This makes the task creation phase a lot easier, especially for non-expert users.\\
+The last feature (Figure \ref{editor}) is a live XML editing from an uploaded file. This may be useful when the user would like to slightly modify some parameters for a task, without the need to modify the file locally and then upload it again on the remote machine.
 
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{editor.png}}
