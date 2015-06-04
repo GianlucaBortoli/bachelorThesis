@@ -17,19 +17,19 @@
 
 \section{Internal structure}\label{structure}
 PROSIT is written in C++ and has a modular structure, as the Object Oriented Programming (OOP) paradigm implicitly suggests.\\
-Some external libraries have been used in order to increase the performance during the matrices/vectors operarions and to simplify some others. The most relevant are \emph{Eigen}\footnote{\url{http://eigen.tuxfamily.org}}, \emph{TinyXML-2}\footnote{\url{https://github.com/leethomason/tinyxml2}} and \emph{Doxygen}\footnote{\url{http://www.stack.nl/~dimitri/doxygen/}}.\\   
-Since performance can become a real problem when the matrices have several hundreds of rows and columns, Eigen is the most important library for the tool's core: it is versatile, because it supports matrices and vectors of all sizes (both fixed and dynamic) offering many promitives, it is reliable and very fast.\\
-The second one is TinyXML-2, which has been used in the parser for the XML files that are used as solver's inputs. It provides APIs to access the XML inner structure (which is treated as a Document Object Model) as C++ objects that can be easily browsed and manipulated.\\
-The latter is Doxygen, a documentation generator for multiple programming languages. It is widely used\footnote{A list of some projects which already use this tool to generate their documentation is available at \url{http://www.stack.nl/~dimitri/doxygen/projects.html}} because it is highly configurable, it can extract code structure (like class diagrams and many others) even from undocumented files and especially because it is possible to select the output format for the documentation (such as HTML, {\LaTeX} and Unix man pages).\\
+Some external libraries are used in order to increase the performance during the matrices/vectors operarions and to simplify some others. The most relevant are \emph{Eigen}\footnote{\url{http://eigen.tuxfamily.org}}, \emph{TinyXML-2}\footnote{\url{https://github.com/leethomason/tinyxml2}} and \emph{Doxygen}\footnote{\url{http://www.stack.nl/~dimitri/doxygen/}}.\\   
+Since performance can become a real problem when the matrices have several hundreds of rows and columns, Eigen is the most important library for the tool's core: it is versatile, it supports matrices and vectors of all sizes (both fixed and dynamic), it offers many primitives to modify the supported data structures, it is reliable and very fast.\\
+TinyXML-2 is used in the parser for the XML files that are used as inputs for the solver. It provides APIs to access the XML inner structure (which is treated as a Document Object Model) as C++ objects that can be easily browsed and manipulated.\\
+The latter is Doxygen, a documentation generator for multiple programming languages. It is widely used\footnote{A list of some projects which already use this tool to generate their documentation is available at \url{http://www.stack.nl/~dimitri/doxygen/projects.html}} because it is highly configurable, it can extract the codebase structure (like class diagrams and many others) even from undocumented files and especially because it is possible to select the output format for the documentation (such as HTML, {\LaTeX} and Unix man pages).\\
 The tool can be devided into few standalone modules:
 \begin{itemize}
   \item the distribution handler class, for both PMFs and CDFs.
   \item the task descriptor class, where the inner structure of a task is described and stored.
   \item the XML parser and the utilities for the XML manipulation.
-  \item the probability solver class, which is essentialy a wrapper object for the solving algorithm and the parameters for the RR task.
-  \item the QBDP interpretation for the input task; it is the class that actually implements the functions to build the transition matrix and the solution algorithm for the probability solver class.
+  \item the probability solver class that is essentialy a wrapper object for the solving algorithms and the other parameters for the RR task.
+  \item the QBDP interpretation for the input task; this class actually implements the functions to build the transition matrix and the solution algorithm for the probability solver.
   \item the QoS function, which is used to compute the final value for the quality of service, given the input task parameters.
-  \item the command line and the XML solvers are those which contains the main function that are compiled in order to obtain the executable files.
+  \item the command line and the XML solvers contains the \emph{main} function that are compiled in order to obtain the executable files.
 \end{itemize}
 
 \begin{figure}[H]
@@ -39,21 +39,21 @@ The tool can be devided into few standalone modules:
 \end{figure}
 
 \section{Use cases}
-The most common use case for PROSIT is the \emph{analysis problem}: the users are required to enter the parameters to define the task they wish to analyse.\\
-Since a task can only be of  the resource reservation type\footnote{The fixed priority type of task is currently under development and it is not available yet.}, the values for the time requirements (the PMF for the computation time and the one for the interarrival time, which is essential if the task is aperiodic) and the scheduling parameters \( Q_{i}^s \) and \( T_{i}^s \) must be provided. Thanks to the temporal isolation property defined in Equation \ref{schedCond}, if several tasks are passed as inputs, the tool is allowed to treat every task on its own. It is possible to easily understand that this situation leads to additional semplifications during the design phase.\\ 
-The probability distribution functions can be specified either inside the task definition or taken as input from a file.
+The most common use case for PROSIT is the \emph{analysis problem}: the users are required to enter the parameters to define the task/s they wish to analyse.\\
+Since a task can only be of resource reservation type\footnote{The fixed priority type of task is under development and it is not available yet.}, the values for the time requirements (namely the PMF for the computation time and the one for the interarrival time, which is essential if the task is aperiodic) and the scheduling parameters \( Q_{i}^s \) and \( T_{i}^s \) must be provided. Thanks to the temporal isolation property defined in Equation \ref{schedCond}, if several tasks are specified as input, the tool is allowed to treat every task on its own. It is possible to easily understand that this situation leads to additional semplifications during the design phase.\\ 
+The probability distribution functions can be specified either inside the task definition section in the XML or retrieved from a file.
 \begin{figure}[H]
   \center{\includegraphics[width=0.7\linewidth]{usecase.png}}
   \caption{The analysis use case.}
   \label{usecase}
 \end{figure}
 
-As a result of a tool invocation, all the provided information are analysed and then the solver for the probabilistic deadlines is called.\\ 
-The \emph{apply\_algorithm()} method called by the probability solver object is a pure virtual function\footnote{Pure virtual functions in C++ are used to take advantage of polymorphism. This is essential for providing a unique interface for multiple objects which implements different versions of the same method, based on the input values.}; this allows PROSIT to call the right solution strategy selected by the user.\\
+As a result of a tool invocation all the information provided by the user are analysed and then the solver for the probabilistic deadlines is called.\\ 
+The \emph{apply\_algorithm()} method called by the probability solver object is a pure virtual function\footnote{Pure virtual functions in C++ are used to take advantage of polymorphism. This is essential for providing a unique interface for multiple objects which implements different versions of the same method, based on the input values.}. This choice allows PROSIT to call the right solution strategy selected by the user.\\
 The final results and their computation times are either printed on the screen or written on a text file.
 
 \section{RR solver}
-The solver for resource reservation tasks is based on algorithms for a numerical solution of the connected quasi-birth death process and implements the following methods:
+The solver for resource reservation tasks is based on algorithms for a numerical solution of the connected quasi-birth death process. It implements the following methods:
 \begin{lstlisting}[frame=bt]
   void pre_process();
   bool compute_pi0();
@@ -61,13 +61,13 @@ The solver for resource reservation tasks is based on algorithms for a numerical
   void fill_in_probability_map();
 \end{lstlisting}
 
-The \emph{pre\_process()} function creates the matrices used by the QBD algorithms, which are implemented in every sublclass under the name of \emph{apply\_algorithm()}. The second method is responsible for computing the probabilities from the matrix computed in the previous step. At the end \emph{post\_process()} guarantees that the algorithm gives a reasonable output, while the last method fills the map which is used to store the computation results.\\
+The \emph{pre\_process()} function creates the matrices used by the QBD algorithms, which are implemented in every sublclass under the name of \emph{apply\_algorithm()}. The second method is responsible for computing the probabilities from the matrix mentioned in the previous step. \emph{Post\_process()} guarantees that the algorithm gives a reasonable output, while the last method fills the map which is used to store the computation results.\\
 The solver invokes these functions in the order they were presented.
 
 \subsection{Conservative approximation for PMF}
-Before building the transition matrix, the values of the PMFs for both computation and interarrival times need to be \emph{resampled} to an integer value\footnote{In the probabilistic deadline \emph{(t,p)}, both values can be expressed as floating point numbers; then, internally, PROSIT approximate them to an integer since we aim to output an estimate.}, in order to obtain a \emph{conservative approximation}.\\
-The way of reasoning is the same for both cases, but with a very important detail: a computation time has to be approximated to a greater value, while an interarrival time to a lower one.\\ 
-This has to be done in this way because the tool must always be placed into a \emph{worst-case scenario}. The resampling function returns a pointer to the resampled PMF object and it is defined as follows:
+In order to obtain a \emph{conservative approximation}, the values of the PMFs for both computation and interarrival times need to be \emph{resampled} to an integer value\footnote{In the probabilistic deadline \emph{(t,p)}, both values can be expressed as floating point numbers; then, internally, PROSIT approximate them to an integer since we aim to output an estimate.} before building the transition matrix.\\
+The way of reasoning is the same for both cases, but with a very important detail: a computation time has to be approximated to a greater value, while an interarrival time has to be rounded to a lower one.\\ 
+This procedure is necessary because the tool must always be placed into a \emph{worst-case scenario}. The resampling function returns a pointer to the resampled PMF object and it is defined as follows:
 \begin{lstlisting}[frame=bt, numbers=none]
   pmf * resample(int granularity, bool direction);
 \end{lstlisting}
@@ -80,11 +80,10 @@ where \emph{granularity} is the desired number of bins for the resampled PMF and
 \end{figure}
 
 \subsection{Transition matrix creation} \label{matrixcreation}
-The creation of the transition matrix which is later used to apply the algorithms can result in a critical performance bottleneck, since the size can be huge\footnote{Some tests we performed developing the tool run the algorithms on a matrix with a size of nearly one thousand.}.\\ 
+The creation of the transition matrix used as input for the solution algorithms can result in a critical performance bottleneck, since the size can be huge\footnote{Some tests we performed developing the tool run the algorithms on a matrix with a size of nearly one thousand.}.\\ 
 Given that the complexity and the overall performance of the algorithms mentioned in Section \ref{benefits} cannot be changed, this will certainly explain the motivation behind the effort to optimize as much as possible the matrix creation phase.\\
 As explained in \ref{transitionmatrix}, the whole transition matrix has a recurrent block structure.\\ 
-The first step is to limit the matrix size to the one of \( C \), \( A_{0} \), \( A_{1} \) and \( A_{2} \), since it can be theoretically have an infinite size that makes it intractable computationally speaking. Firstly the \( max_{rows} \) and \( max_{cols} \) values need to be computed, which represent the maximum possible number of rows and columns respectively.\\ 
-They can be evaluated as follows: 
+The first step is to limit the matrix size to the one of \( C \), \( A_{0} \), \( A_{1} \) and \( A_{2} \), since the whole one can theoretically have an infinite size that makes it intractable computationally speaking. Firstly the \( max_{rows} \) and \( max_{cols} \) values need to be computed: they represent the maximum possible number of rows and columns respectively and they can be evaluated as follows: 
 \begin{equation*}
 \begin{split}
   max_{rows} &= i.get\_min() * Q + 1 \\
@@ -93,7 +92,7 @@ They can be evaluated as follows:
 \end{equation*}
 
 where \( i.get\_min() \) returns the minimum value for the interarrival time PMF, \( c.get\_max() \) returns the maximum value for the computation time PMF and \( Q \) is the budget associated with the given task.\\
-Then, after taking \( max_{v} = max\{max_{rows}\,,\,max_{cols}\} \) as the size of one of the above mentioned matrices, it is possible to know that the size of the whole transition matrix is equal to \( 2 \times max_{v} \).\\
+After taking \( max_{v} = max\{max_{rows}\,,\,max_{cols}\} \) as the size of one of the above mentioned matrices, it is possible to know that the size of the whole transition matrix \( P \) is equal to \( 2 \times max_{v} \).\\
 The approach used to calculate the values inside the matrix is based on its internal structure, which is proven in \cite{pipelines} to be like:
 \begin{figure}[H] \label{matrixstructure}
 \begin{equation*} 
@@ -113,8 +112,8 @@ The approach used to calculate the values inside the matrix is based on its inte
 \caption{The transition matrix for the generic \( i^{th} \) stage.}
 \end{figure}
 
-The figure shown above describes the \( P_{i} \) matrix where it is possible to spot an internal recurrent configuration, which is highlighted with the different names for the rows \emph{a}, \emph{b} and \emph{c}.\\
-To take advantage of this proprerty, the \emph{pre\_process()} method builds the matrix in \textbf{three steps}: the first one is to calculate only the first row and then copy its value until the end of the \emph{a} block. Secondly all the \emph{transient}\footnote{This part of the matrix exists only if the task is aperiodic. In the case of a periodic one, this part of the matrix does not exists and the transition matrix is composed only by the blocks named with \emph{a} and \emph{c}.} rows denoted with the letter \emph{b} are calculated, cell by cell. In the \emph{c} block, as happened for the first one, only the first row is calculated and then it is copied to the following one shifted right by one.\\
+The figure shown above describes the \( P_{i} \) matrix where it is possible to spot an internal recurrent configuration, which is highlighted with the different names for the rows (\emph{a}, \emph{b} and \emph{c}).\\
+To take advantage of this proprerty, the \emph{pre\_process()} method builds the matrix in \textbf{three steps}: the first one is to calculate only the first row and then copy its values until the end of the \emph{"a"} block. Secondly all the \emph{transient}\footnote{This part of the matrix exists only if the task is aperiodic. In the case of a periodic one, this part of the matrix does not exists and the transition matrix is composed only by the blocks named with \emph{a} and \emph{c}.} rows denoted with the letter \emph{"b"} are calculated, cell by cell. In the \emph{"c"} block only the first row is calculated and then it is copied to the following one shifted right by one, as happened for the first one.\\
 Exploiting as much as possible the internal structure of the matrix \( P_{i} \) prevented the algorithm from calculating every single cell of the matrix, which involves a function\footnote{The complexity of the \emph{matrix\_prob\_ts} function is \( O(n) \), \emph{n} being the size of the vector for the computation time PMF.} to be called \( max_{v}^{2} \) times. The time needed to calculate the entire matrix with the new method decreased of around 40\%, even though the overall complexity is still an \( O(n^{2}) \). For more details about the results, see Section \ref{matrixperformance}.
 
 \section{Tool's execution}
@@ -188,16 +187,16 @@ To define multiple tasks into a single configuration file, the user can simply u
 For further details about the possible values the attributes can take, see the tool's documentation.  
 
 \section{Web interface}
-In order to be as user-friendly as possible, a \emph{web interface} has been developed. It is designed to execute on a remote server running PHP and a web-server\footnote{Apache is fine, but any other web-server can manage it.}, which takes care of executing an instance of the XML solver.\\
-The \textbf{client-server} paradigm allows to move the heavy computation part from a normal laptop to a machine with more computational and memory resources. This is very useful to test with many different inputs, since their execution may take several hours\footnote{The time PROSIT takes to complete its work mainly depends on the size of the transition matrix, which is highly influenced by the \emph{step} parameter used to resample the PMFs for the computation and the interarrival times. The lower this value is, the bigger is the resulting matrix.}.
+The \emph{web interface} has been developed in order to be as user-friendly as possible. It is designed to execute on a remote server running PHP and a web-server\footnote{Apache is fine, but any other web-server can manage it.}, which takes care of executing an instance of the XML solver.\\
+The \textbf{client-server} paradigm allows to move the heavy processing part from a normal laptop to a machine with more computational and memory resources. This is very useful to test the tool with many different inputs, since their execution may take several hours\footnote{The time PROSIT takes to complete its work mainly depends on the size of the transition matrix. This value is highly influenced by the \emph{step} parameter used to resample the PMFs for the computation and the interarrival times. The lower this value is, the bigger is the transition matrix describing the relative QBDP.}.
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{index.png}}
   \caption{The main page.}
   \label{index}
 \end{figure}
 
-Figure \ref{index} shows the homepage: it permits the user to upload XML file from his computer. When some input is availabe on the server, it is shown in the list on the bottom of the page, where the user can select one. Once a file is selected, the \emph{"select and run"} button can be cliked to start the computation and then the output is displayed in real time.\\
-Another key feature of this Graphical User Interface (GUI) is the possibility to create a task and define its parameters from scratch, by clicking the \emph{"create task"}.
+Figure \ref{index} shows the homepage: it permits the user to upload XML file from his computer. When some input is availabe on the server, it is shown in the list on the bottom of the page. Once a file is selected, the \emph{"select and run"} button can be cliked to start the computation phase and then the output is displayed in real time.\\
+Another key feature of this Graphical User Interface (GUI) is the possibility to create a task and define its parameters from scratch by clicking the \emph{"create task"}.
 
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{modal.png}}
@@ -205,8 +204,8 @@ Another key feature of this Graphical User Interface (GUI) is the possibility to
   \label{modal}
 \end{figure}  
 
-As it can be seen in Figure \ref{modal}, a modal windows appears on the screen. It allows the user to easily enter all the parameters to customize the task\footnote{All the fields have a default value which can be canged at will. The dropdown lists on some of the attributes selection are thought to limit the possible choices only to the ones currently available in the tool.}; then he/she can save the selected configuration to an XML file directly on the server with the desired name. This makes the task creation phase a lot easier, especially for non-expert users.\\
-The last feature (Figure \ref{editor}) is a live XML editing from an uploaded file. This may be useful when the user would like to slightly modify some parameters for a task, without the need to modify the file locally and then upload it again on the remote machine.
+As it can be seen in Figure \ref{modal}, a modal windows appears on the screen. It allows the user to easily enter all the parameters to customize the task\footnote{All the fields have a default value which can be canged at will. The dropdown lists on some of the attributes selection are thought to limit the possible choices only to the ones currently available in the tool.}; then he/she can save the selected configuration to an XML file directly on the server with the desired name. This interface makes the task creation phase a lot easier, especially for non-expert users.\\
+Another feature is a live XML editing from an uploaded file (Figure \ref{editor}). This may be useful when the user would like to slightly modify some parameters for a task, without the need to edit the file locally and then upload it again on the remote machine.
 
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{editor.png}}
