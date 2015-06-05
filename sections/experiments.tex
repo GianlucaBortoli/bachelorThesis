@@ -14,7 +14,7 @@ The code restructure made it necessary to check that the results provided by thi
 The process of testing and comparison described above was done in an automated way using some scripts written in bash.
 
 \section{Cyclic Reduction accuracy} \label{craccuracy}
-In order to compare the accuracy between the analytical and Cyclic Reduction (CR) results, a task with the same parameters (except for the bandwith) is considered. The \( Q_{s} \) value is changed to make the bandwith value in the range [35\% - 60\%]. The results are visible in the table below.
+In order to compare the accuracy between the analytical and the Cyclic Reduction results, a task with the same parameters (except for the bandwith) is considered. The budget \( Q_{s} \) is changed to make the bandwith value in the range [35\% - 60\%]. The results are visible in the table below.
 \begin{table}[H]
 \label{comparison}
 \begin{center}
@@ -28,8 +28,8 @@ In order to compare the accuracy between the analytical and Cyclic Reduction (CR
 \end{center} 
 \end{table}
 
-The gap between the results of the two different solving algorithms is significant in the first two columns, but it constantly reduces as the bandwith increases. A bandwith value lower than 40\% gives a probability to meet the deadline smaller than the 80\%, which is not sufficient for most of the real-time applications\footnote{The QoS with wich probability would not allow the user to enjoy the service.}.\\
-This means that the CR works preatty well in \emph{heavy-traffic} conditions, namely a situation in which the system is heavily used and stressed by many tasks.
+The gap between the results of the two different solving algorithms is significant in the first two columns, but it constantly decreases as the bandwith increases. A bandwith value lower than 40\% gives a probability to meet the deadline smaller than the 80\%, which is not sufficient for most of the real-time applications\footnote{The QoS with this probability value would not allow the user to enjoy any real-time service.}.\\
+This means that the CR works preatty well only in \emph{heavy-traffic} conditions, namely a situation in which the system is heavily used and stressed by many tasks. Lukily it is a standard situation for most of soft real-time systems.  
 
 \section{Performance enhencment in matrix creation} \label{matrixperformance}
 As described in Section \ref{matrixcreation}, the efficiency of the matrix creation has been highly improved. The table below shows a benchmark for an example matrix.
