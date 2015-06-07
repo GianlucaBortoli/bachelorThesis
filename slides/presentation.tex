@@ -3,6 +3,7 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass{beamer}
+\graphicspath{{img/}} % images folder path
 
 \mode<presentation> {
 
@@ -65,31 +66,34 @@
 
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{datetime} % Allows to specify a date
 
 %----------------------------------------------------------------------------------------
 %   TITLE PAGE
 %----------------------------------------------------------------------------------------
-
-\title[Short title]{Main Topic } % The short title appears at the bottom of every slide, the full title is only on the title page
-
-\author{John Smith} % Your name
-\institute[UCLA] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
-{
-University of California \\ % Your institution for the title page
-\medskip
-\textit{john@smith.com} % Your email address
-}
-\date{\today} % Date, can be changed to a custom date
-
 \begin{document}
 
+\title[PROSIT]{PROSIT\\A tool for optimal design of soft real-time systems} 
+\author[Gianluca Bortoli]{
+  \begin{tabular}{rl}
+    \textbf{Candidate:} & Gianluca Bortoli \\
+    \textbf{Supervisor:} & Prof. Luigi Palopoli
+  \end{tabular}
+}
+\institute[]{
+  \uppercase{University of Trento} \\
+  \uppercase{Department of Information Engineering and Computer Science}
+}
+\newdate{date}{06}{09}{2015} % format: gg/mm/aaaa. Set here presentation date
+\date{\displaydate{date}}
+
 \begin{frame}
-\titlepage % Print the title page as the first slide
+  \titlepage % Print the title page as the first slide
 \end{frame}
 
 \begin{frame}
-\frametitle{Overview} % Table of contents slide, comment this block out to remove it
-\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+  \frametitle{Overview} % Table of contents slide, comment this block out to remove it
+  \tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
 \end{frame}
 
 %----------------------------------------------------------------------------------------
@@ -97,11 +101,8 @@ University of California \\ % Your institution for the title page
 %----------------------------------------------------------------------------------------
 
 %------------------------------------------------
-\section{First Section} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
-%------------------------------------------------
 
-\subsection{Subsection Example} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
-
+\section{Paragraph}
 \begin{frame}
 \frametitle{Paragraphs of Text}
 Sed iaculis dapibus gravida. Morbi sed tortor erat, nec interdum arcu. Sed id lorem lectus. Quisque viverra augue id sem ornare non aliquam nibh tristique. Aenean in ligula nisl. Nulla sed tellus ipsum. Donec vestibulum ligula non lorem vulputate fermentum accumsan neque mollis.\\~\\
@@ -111,6 +112,7 @@ Sed diam enim, sagittis nec condimentum sit amet, ullamcorper sit amet libero. A
 
 %------------------------------------------------
 
+\subsection{Bullets}
 \begin{frame}
 \frametitle{Bullet Points}
 \begin{itemize}
@@ -124,6 +126,7 @@ Sed diam enim, sagittis nec condimentum sit amet, ullamcorper sit amet libero. A
 
 %------------------------------------------------
 
+\subsection{Blocks}
 \begin{frame}
 \frametitle{Blocks of Highlighted Text}
 \begin{block}{Block 1}

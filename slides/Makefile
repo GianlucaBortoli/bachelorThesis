@@ -4,6 +4,7 @@ BUILDTEX=$(TEX) $(PROJECT).tex
 
 all:
 	$(BUILDTEX)
+	$(BUILDTEX)
 
 clean:
 	rm -f *.aux *.log *.nav *.out *.snm *.toc *.pdf *.vrb *~
