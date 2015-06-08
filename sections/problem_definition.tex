@@ -12,39 +12,48 @@
 % + quasi birth-deadth process interpretation
 % + the benefits of modeling as QBDP
 
+There were some theoretical foundations that had to be investigated in order to write this thesis. This framework is explained below. 
+
 \section{Task model}
-A set of real-time tasks \( \{\tau_{i}\} \) sharing a processing unit (CPU) is considered, where every task consists of a stream of jobs \( J_{i,\,k} \).\\
+This task model considers a set of real-time tasks \( \{\tau_{i}\} \) sharing a processing unit (CPU), where every task consists of a stream of jobs \( J_{i,\,k} \), namely the \( k^{th} \) instance of the \( i^{th} \) task in the set \( \{\tau_{i}\} \).\\
 Each job \( J_{i,\,k} \) is defined as a touple \( \left(r_{i,\,k}, \;f_{i,\,k}, \;c_{i,\,k}\right) \) in which:
 \begin{itemize}
-  \item \( r_{i,\,k} \) is the \emph{release} time for the \( k^{th} \) instance of the \( i^{th} \) task. In other words this is the time when the job arrives and becomes elegible for execution by the scheduler and thus for the CPU.
+  \item \( r_{i,\,k} \) is the \emph{release} time. In other words this is the time when the job arrives and becomes elegible for execution by the scheduler and thus for the CPU.
   \item \( f_{i,\,k} \) is the \emph{finishing} time; it is the moment when the computation for the job \( J_{i,\,k} \) ends.
   \item \( c_{i,\,k} \) is the \emph{computation} time, that is the amount of time for which the job \( J_{i,\,k} \) is running.
 \end{itemize} 
 
-The computation time is assumed to be an independent and identically distributed (i.i.d.\footnote{Two random variables X and Y are said to be independent and identically distributed if the first has the same probability distribution of the second one and both are mutually indipendent, which means that the occurrence of X does not affect Y (and vice versa).}) stochastic process. The soft real-time model we are going to explain and use in the tool is based on probabilistic deadlines rather than adopting the classic hard deadline.\\
-Hence for each job instance \( c_{i,\,k} \) is a random variable described by a certain Probability Mass Function (PMF).\\
-Every job \( J_{i,\,k} \) has also a relative deadline \( D_{i} \), which is used to define the absolute deadline \( d_{i,\,k} = r_{i,\,k} + D_{i} \). \\
-A deadline is said to be respected if \( f_{i,\,k} \leq d_{i,\,k} \) and missed if \( f_{i,\,k} > d_{i,\,k} \). In order to be more precise a probabilistic deadline is respected if \( \Pr\,\{f_{i,\,k} > r_{i,\,k} + D_{i} \} \leq p_{i} \), missed otherwise.
+The computation time is assumed to be an independent and identically distributed (i.i.d.\footnote{Two random variables X and Y are said to be independent and identically distributed if the first has the same probability distribution of the second one and both are mutually indipendent, which means that the occurrence of X does not affect Y (and vice versa).}) stochastic process. Hence for each job instance, \( c_{i,\,k} \) is a random variable described by a certain Probability Mass Function (PMF).\\ 
 
-\section{Different types of tasks}
-There exist three types of tasks: \emph{periodic}, \emph{aperiodic} and \emph{sporadic}.\\
-A periodic task owns a regular structure and it is triggered every period \( T_{i} \). Its lifetime is similar to a cycle that is activated at time \( r_{i,\,k} \), executes for a period \( c_{i,\,k} \) and then waits the next period \( T_{i}+1 \) to start running again.\\
-The second class is composed of these tasks which are not characterize by periodic arrivals. Moreover a minimum inter-arrival time between different tasks does not exists and, generally speaking, they have not any recurrent structure. They are used to model tasks which occur rarely and are irregular throughout the time.\\
+\begin{figure}[H]
+  \center{\includegraphics[width=0.5\linewidth]{model_task.png}}
+  \caption{Mathematical model of a task.}
+  \label{automaton}
+\end{figure}
+
+The soft real-time model used in the tool is based on probabilistic deadlines rather than adopting the classic deterministic deadline.\\
+Every job \( J_{i,\,k} \) has also a relative deadline \( D_{i} \), which is used to define the absolute deadline \( d_{i,\,k} = r_{i,\,k} + D_{i} \). \\
+A deadline is said to be respected if \( f_{i,\,k} \leq d_{i,\,k} \) and missed if \( f_{i,\,k} > d_{i,\,k} \). In order to be more precise a probabilistic deadline is respected if \( \Pr\,\{f_{i,\,k} > r_{i,\,k} + D_{i} \} \leq p_{i} \), otherwise it is missed.
+
+\section{Types of tasks}
+The types of tasks described in the literature are \emph{periodic}, \emph{aperiodic} and \emph{sporadic}.\\
+A periodic task owns a regular structure and it is triggered every period \( T_{i} \). Its lifetime is similar to a cycle: it is activated at time \( r_{i,\,k} \), executes for an amount of time \( c_{i,\,k} \) and then waits the next period to start running again.\\
+An aperiodic task is characterized by non-periodic arrivals. Moreover the is no minimum inter-arrival time between different jobs and, generally speaking, these tasks do not have any recurrent structure. They are used to model tasks which occur rarely and are irregular throughout the time.\\
 The last type is very similar to a periodic task, because both have a minimun inter-arrival time between each activation, even though it is not always the same. A sporadic task is triggered by an external event which needs the task to be activated, not using a timer (namely the period \( T_{i} \)) as happens for a periodic one.\\
-The work described in following chapters takes into consideration the first two types of tasks that are the most common and useful ones.
+The work described in following chapters takes into consideration the first two types of tasks that are the most commonly used.
 
 \section{Scheduler}
 Tasks do not run on bare computer hardware: the Operating System (OS) creates the illusion for each task to have a virtual CPU where they run alone. This make them believe that they are running simultaneously on the same machine\footnote{This is true if we think of a single CPU with one core. Modern CPUs are multi-core, which gives the possibility to actually run multiple tasks at the same time, with an upper bound for the number of process to be executed in parallel given by the number of cores.}.\\
 Since it is possible to run only one task at a time on a single CPU, they need to alternate each other in order to give everyone the possibility to get their work done. Here is where the \emph{task scheduler} starts its job: it is responsible for scheduling a set of tasks \( \{\tau_{i}\} \).\\
 There exist several scheduling algorithm that can be used to select at every instant \emph{t} which is the task to be executed. More in general it is possible to say that a scheduling algorithm \emph{A} generates a schedule \( \sigma_{A}\left(t\right) \) starting from a set of tasks \( \{\tau_{i}\} \).\\
-At the end of the processing phase a schedulability test is performed: it checks if the schedule \( \sigma_{A}\left(t\right) \) generated by the algorithm \emph{A} guarantees that every deadline (probabilistic or not) is met.\\
-Some of the most famous in the computer science literature are Rate Monotonic (RM) and Earliest Deadline First (EDF). We concentrated on the \emph{sched\_deadline} algorithm which is the one currently used in the Linux kernel\footnote{\emph{Sched\_deadline} became the default scheduler from the 3.14 version of the kernel. It is also known as Complete Fair Queuing (CFQ) and it is still the one used in the latest kernel available on \url{www.kernel.org}. The old one was a modified version of the EDF algorithm. An overview of sched\_deadline can be found at \url{http://lxr.free-electrons.com/source/Documentation/scheduler/sched-deadline.txt}}.
+At the end of the processing phase, a schedulability test is performed: it checks if the schedule \( \sigma_{A}\left(t\right) \) generated by the algorithm \emph{A} guarantees that every deadline (probabilistic or not) is met.\\
+Some of the most famous scheduling algorithms in the computer science literature are Rate Monotonic (RM), Deadline Monotonic (DM) and Earliest Deadline First (EDF). We concentrated on the \emph{sched\_deadline} algorithm which is currently used in the Linux kernel\footnote{\emph{Sched\_deadline} became the default scheduler from the 3.14 version of the kernel. It is also known as Complete Fair Queuing (CFQ) and it is still the one used in the latest kernel available on \url{www.kernel.org}. The old one was a modified version of the EDF algorithm. An overview of sched\_deadline can be found at \url{http://lxr.free-electrons.com/source/Documentation/scheduler/sched-deadline.txt}}.
 
 \section{Resource Reservation scheduling}
-As multiple real-time tasks can run concurrently on the same machine, the \emph{resource reservation} (RR) algorithm allows to associate to each task \( \tau_{i} \) a \emph{reservation} \( \left(Q_{i}^s, T_{i}^s\right) \).\\ 
-This means that the \( i^{th} \) task can execute for \( Q_{i}^s \) time units in every interval of length \( T_{i}^s \). The first value is called \emph{budget} while the second is the \emph{period} of the task.\\
+As multiple real-time tasks can run concurrently on the same machine, the \emph{resource reservation} (RR) \cite{hardrealtime} algorithm allows to associate to each task \( \tau_{i} \) a \emph{reservation} \( \left(Q_{i}^s, T_{i}^s\right) \).\\ 
+This means that the \( i^{th} \) task can execute for \( Q_{i}^s \) time units in every interval of length \( T_{i}^s \). The first value is called \emph{budget} while the second is the \emph{reservation period} of the task.\\
 In this way a fraction of CPU is allocated for the task \( \tau_{i} \). This value is called \emph{bandwidth} and it is calculated as follows: \( B_{i} = \frac{Q_{i}^s}{T_{i}^s}\).\\
-As a consequence the scheduler reserves for each task an amount of computation time \( Q_{i}^s \) in each period \( T_{i}^s \). In this way the scheduler prevents the tasks to run for more time than the selected budget and therefore each task does not need to take care of what other tasks do while they are executing concurrently.\\
+As a consequence the scheduler reserves for each task an amount of computation time \( Q_{i}^s \) in each reservation period \( T_{i}^s \). In this way the scheduler prevents the tasks to run for more time than the selected budget and therefore each task does not need to take care of what other tasks do while they are executing concurrently.\\
 This important propriety for RR is called \textbf{temporal isolation} and it is valid as long as the following scheduling condition holds \cite{realtimehandbook}:
 \begin{equation} \tag{1} \label{schedCond}
   \displaystyle\sum_{i} B_{i} =  \displaystyle\sum_{i} \frac{Q_{i}^s}{T_{i}^s} \leq 1

@@ -1,5 +1,5 @@
 %!TEX root=../thesis.tex
-\chapter{Testing and experimental data}\label{chp:experiments}
+\chapter{Experiments}\label{chp:experiments}
 
 % + behaviour with changing bandwidth -> analytical vs. CR results (see paper)
 % + deep code restructure from original tool to v2.0
@@ -31,7 +31,7 @@ In order to compare the accuracy between the analytical and the Cyclic Reduction
 The gap between the results of the two different solving algorithms is significant in the first two columns, but it constantly decreases as the bandwith increases. A bandwith value lower than 40\% gives a probability to meet the deadline smaller than the 80\%, which is not sufficient for most of the real-time applications\footnote{The QoS with this probability value would not allow the user to enjoy any real-time service.}.\\
 This means that the CR works preatty well only in \emph{heavy-traffic} conditions, namely a situation in which the system is heavily used and stressed by many tasks. Lukily it is a standard situation for most of soft real-time systems.  
 
-\section{Performance enhencment in matrix creation} \label{matrixperformance}
+\section{Performance enhancement in matrix creation} \label{matrixperformance}
 As described in Section \ref{matrixcreation}, the efficiency of the matrix creation has been highly improved. The table below shows a benchmark for an example matrix.
 \begin{table}[H]
 \label{benchmark}
