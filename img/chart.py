@@ -9,8 +9,8 @@ def plot():
   newtimesscaled = [x / 1000000 for x in newtimes]
   oldtimes = [12463, 19156, 29957, 52704, 112092, 431725, 10851304, 48938869, 225041224, 462334313]
   oldtimesscaled = [x / 1000000 for x in oldtimes]
-  plt.plot(sizes, newtimesscaled)
-  plt.plot(sizes, oldtimesscaled)
+  plt.plot(sizes, newtimesscaled, marker='o')
+  plt.plot(sizes, oldtimesscaled, marker='o')
   plt.xlabel("Transition matrix size")
   plt.ylabel("Elapsed time (seconds)")
   plt.show()
