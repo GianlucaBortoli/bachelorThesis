@@ -47,14 +47,14 @@ As described in Section \ref{matrixcreation}, the efficiency of the matrix creat
 \end{table}
 
 
-It is possible to see how much the method developed and discussed in this thesis is faster: the computation takes nearly 50000\(\,\mu{s} \) less with a matrix size of only 442 rows/columns. It represents a boost of about 40\% in terms of pure performance, which is a noteworthy result.\\
+It is possible to see how much the method developed and discussed in this thesis is faster: the computation takes nearly 50000\(\,\mu{s} \) less with a matrix size of only 442 rows/columns. It represents a boost of about 40\% in terms of pure performance: this is a noteworthy result, since the matrix size taken into consideration in Table \ref{benchmark} is quite small.\\
 
 \begin{figure}[H]
-  \center{\includegraphics[width=0.65\linewidth]{performance_chart.png}}
-  \caption[]{"New" (in blue) and "old" (in red) algorithm comparison\footnotemark[3].}
+  \center{\includegraphics[width=0.6\linewidth]{performance_chart.png}}
+  \caption[]{"New" (blue) and "old" (green) algorithm comparison\footnotemark[3].}
   \label{performancechart}
 \end{figure}
 
 \footnotetext{The results presented were evaluated on an Intel Core i7-3537U CPU @ 2.00GHz with 8GB of RAM.}
 
-The benefits of the new algorithm can be clearly seen from Figure \ref{performancechart}: as the transition matrix size increases, the difference in terms of elapsed time for its creation grows constantly. The approach developed in this thesis takes acout 4 minutes less than the old algorithm. The last test was performed on a server with 64GB of RAM, since the matrix need to fit in memory. 
+The benefits of the new algorithm can be clearly seen also from Figure \ref{performancechart}: as the transition matrix size increases, the difference in terms of elapsed time for its creation grows constantly. The approach developed in this thesis takes about 4 minutes less than the old algorithm with a matrix size of 44080. This test was performed on a server with 64GB of RAM, since the matrix need to fit in memory.
