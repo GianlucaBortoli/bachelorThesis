@@ -23,13 +23,22 @@ Each job \( J_{i,\,k} \) is defined as a touple \( \left(r_{i,\,k}, \;f_{i,\,k},
   \item \( c_{i,\,k} \) is the \emph{computation} time, that is the amount of time for which the job \( J_{i,\,k} \) is running.
 \end{itemize} 
 
-The computation time is assumed to be an independent and identically distributed (i.i.d.\footnote{Two random variables X and Y are said to be independent and identically distributed if the first has the same probability distribution of the second one and both are mutually indipendent, which means that the occurrence of X does not affect Y (and vice versa).}) stochastic process. Hence for each job instance, \( c_{i,\,k} \) is a random variable described by a certain Probability Mass Function (PMF).\\ 
-
+The computation time is assumed to be an independent and identically distributed (i.i.d.\footnote{Two random variables X and Y are said to be independent and identically distributed if the first has the same probability distribution of the second one and both are mutually indipendent, which means that the occurrence of X does not affect Y (and vice versa).}) stochastic process. Hence for each job instance, \( c_{i,\,k} \) is a random variable described by a certain Probability Mass Function (PMF).
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{model_task.png}}
   \caption{Mathematical model of a task.}
   \label{automaton}
 \end{figure}
+
+The worst-case execution time \( U_{i} \), representing the maximum fraction of CPU time spent to execute the task \( \tau_{i} \), can be calculated as follows:
+\begin{equation*}
+  U_{i} = \ceil[\bigg]{\frac{c_{i,\,j}}{T_{i}}}
+\end{equation*}
+
+and the total system utilization \( U \) is given by
+\begin{equation*}
+  U = \displaystyle\sum_{i} U_{i}
+\end{equation*}
 
 The soft real-time model used in the tool is based on probabilistic deadlines rather than adopting the classic deterministic deadline.\\
 Every job \( J_{i,\,k} \) has also a relative deadline \( D_{i} \), which is used to define the absolute deadline \( d_{i,\,k} = r_{i,\,k} + D_{i} \). \\
