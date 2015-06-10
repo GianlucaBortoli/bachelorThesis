@@ -27,17 +27,17 @@ The computation time is assumed to be an independent and identically distributed
 \begin{figure}[H]
   \center{\includegraphics[width=0.5\linewidth]{model_task.png}}
   \caption{Mathematical model of a task.}
-  \label{automaton}
+  \label{taskmodel}
 \end{figure}
 
-The worst-case execution time \( U_{i} \), representing the maximum fraction of CPU time spent to execute the task \( \tau_{i} \), can be calculated as follows:
+The worst-case execution time \( WCET_{i} \), representing the maximum fraction of CPU time spent to execute the task \( \tau_{i} \), can be calculated as follows:
 \begin{equation*}
-  U_{i} = \ceil[\bigg]{\frac{c_{i,\,j}}{T_{i}}}
+  WCET_{i} = \ceil[\bigg]{\frac{c_{i,\,j}}{T_{i}}}
 \end{equation*}
 
-and the total system utilization \( U \) is given by
+and the total system utilization \( WCET_{tot} \) is given by
 \begin{equation*}
-  U = \displaystyle\sum_{i} U_{i}
+  WCET_{tot} = \displaystyle\sum_{i} WCET_{i}
 \end{equation*}
 
 The soft real-time model used in the tool is based on probabilistic deadlines rather than adopting the classic deterministic deadline.\\
@@ -70,14 +70,68 @@ This important propriety for RR is called \textbf{temporal isolation} and it is 
 
 This gives a huge advantage for the designer, since it is possible to analyse each task on its own without taking care of other tasks \cite{probGuarantees}.
 
-\section{Quality function}
-It is necessary to define also a function used to compute the resulting quality of service, given the scheduling parameters for a generic task.\\
+\section{Problem}
+It is necessary to define also a function used to compute the resulting Quality of Service, given the scheduling parameters for a generic task.\\
 The function assumes that there exists a dependency between the scheduling parameters and the actual QoS. This is not always true and it can be very difficult to find \cite{prosit}.\\
-A possibility is to compute this value as a function of the distribution of the delayed tasks. For example, thinking about a video streaming service: if decoding a frame takes too much time and it leads to a deadline miss, that frame would not be displayed and the following job would start decoding the next one. Every non-decoded frame within the deadline leads to a frame not shown on the screen and consequently a decrease of the frame rate and of the quality. 
-
-\section{Goal}
-In view of the last considerations, the \textbf{analysis problem} we address can be stated as follows: given a series of real-time tasks with a PMF \( U(c) = \Pr\{c_{i,\,j} = c\} \) which describes the stochastic computation time, a PMF \( U(i) = \Pr\{i_{i,\,j} = i\} \) for the inter-arrival time, a QoS function and the scheduling parameters mentioned so far, say if the set of tasks \( \{\tau_{i}\} \) is schedulable or not. If it is so, the resulting QoS is computed.\\
+A possibility is to compute this value as a function of the distribution of the delayed tasks. For example, thinking about a video streaming service: if decoding a frame takes too much time and it leads to a deadline miss, that frame would not be displayed and the following job would start decoding the next one. Every non-decoded frame within the deadline leads to a frame not shown on the screen and consequently a decrease of the frame rate and of the quality.\\
+In view of the last considerations, the \textbf{analysis problem} that we address can be stated as follows: given a series of soft real-time tasks with a PMF \( U_{i}(c) = \Pr\{c_{i,\,j} = c\} \) which describes the stochastic computation time, a PMF \( I_{i}(t) = \Pr\{r_{i,\,j+1}-r_{i,\,j} = t\} \) for the inter-arrival time, a QoS function and the scheduling parameters mentioned so far, determine whether the set of tasks \( \{\tau_{i}\} \) is schedulable or not. If \( \tau_{i} \) is schedulable, the resulting QoS is computed.\\
 For the analysis problem, the scheduling parameters are assumed to be selected by the user.
+
+\section{Markov Chains concepts} \label{mcconcepts}
+A Discrete-Time Markov Process (DTMP) \( \{X_{n}\} \) is a stochastic process that describes transitions between one state to another. As it possible to notice from Figure \ref{automaton}, a Markov chain is composed by a set of \emph{states} and the \emph{transitions} between them.
+\begin{figure}[H]
+  \center{\includegraphics[width=0.2\linewidth]{automaton.png}}
+  \caption{Graphical interpretation of a simple Markov chain.}
+  \label{automaton}
+\end{figure}
+
+This process is described as a matrix \( P \) (also called transition matrix) where the rows and the columns represent the states, while the value stored in the cell \( P[i,\,j] \) is the probability to go from state \emph{i} to state \emph{j}.\\
+A Markov chain owns a key property that is at the base of any further consideration on this process: it is \textbf{memoryless}.\\
+This can be more formally expressed in terms of the conditional probabilities:
+\begin{equation} \tag{3} \label{memoryless}
+\begin{split}
+  \Pr\,\{X_{n} = x_{n} \mid X_{1} &= x_{1},\,X_{2} = x_{2},\,\dots\,, X_{n-1} = x_{n-1} \} =\\
+  \Pr\,\{X_{n} &= x_{n} \mid X_{n-1} = x_{n-1}  \}
+\end{split}
+\end{equation}
+
+In other words this means that the proability of transitioning from a state to another depends only on the previous step and not on the other steps taken before.\\
+Given a DTMP, \( \pi_{n}^{(j)} = \Pr\,\{X_{n} = j\}\) denotes a probability in the \( \pi_{n} \) vector defined as follows:
+\begin{equation*}
+  \pi_{n} =  \big[\pi_{n}^{(0)},\,\pi_{n}^{(1)},\,\dots \big]
+\end{equation*}
+
+Moreover, a generic element \(p_{i,\,j}\) of the transition matrix \( P \) is given by the following conditional probability:
+\begin{equation*}
+  p_{i,\,j} = \Pr\,\{X_{n} = j \mid X_{n-1} = i\}
+\end{equation*}
+
+Starting with an initial vector or probabilities \( \pi_{0} \) it is possible to calculate the evolution of the distribution over the time with the equation \( \pi_{n+1} = \pi_{n}P \).\\
+The equilibrium point is a vector \( \overset{\sim}{\pi} \) such that \( \overset{\sim}{\pi} = \overset{\sim}{\pi}P \), which is named invariant measure.\\
+In order to make it possible to find this vector, the Markov chain (MC) must be:
+\begin{itemize}
+  \item \textbf{positive recurrent}; to guarantee it, every state in the MC should be \emph{positive recurrent}\footnote{A state in a Markov chain is said to be positive recurrent if there exists a probability grater than zero that, starting from a state \emph{i}, the state will return to \emph{i} in a finite number of steps. A state can be also null recurrent, if the number of steps is not a finite value. A state which is not recurrent is called transient.}. 
+  \item \textbf{irreducible}; this means that every state can be reached by any other one in a finite number of steps with a probability grater than zero. Having this property implies that all the states are of the same type.  
+\end{itemize}
+
+Another important property of a MC which is both positive recurrent and irreducible is the existence of a single equilibrium vector \( \overset{\sim}{\pi} \), called \textbf{steady state distribution}, due to the fact that
+\begin{equation*}
+  \displaystyle\sum_{n} \pi_{n} = 1
+\end{equation*}
+
+A DTMC can be modeled as a \emph{Quasi-Birth-Death Process} (QDBP) \cite{nummethods} if and only if its transition matrix \( P \) has the following internal block structure:
+\begin{equation*} \label{transitionmatrix}
+  P = 
+  \begin{bmatrix}
+    C & A_{0} & 0 & 0 & 0 & \cdots \\
+    A_{2} & A_{1} & A_{0} & 0 & 0 & \cdots \\
+    0 & \ddots & \ddots & \ddots & 0 & \cdots \\
+    0 & 0 & A_{2} & A_{1} & A_{0} & \cdots \\
+    \cdots & \cdots & \cdots & \cdots & \cdots & \ddots
+  \end{bmatrix}
+\end{equation*}
+
+where \( C \), \( A_{0} \), \( A_{1} \) e \( A_{2} \) are matrices. If they reduce to a scalar value this is a standard Birth-Death Process (BDP).
 
 \section{RR modeled as a Markov Chain}
 Let me introduce some of the notations used from now on:
@@ -100,62 +154,6 @@ The rule followed by \( \delta_{k} \) is described in this way:
 The variable \( v_{k} \) cannot be measured empirically: it is the amount of backlogged computation time that has not be served by the scheduler yet and it must be taken into account when a new job arrives.\\
 Since the computation time for each job is assumed to be an i.i.d. stochastic variable, the model shown by Equation \ref{markovProcess} represents a \emph{Discrete-Time Markov Chain} (DTMC) \cite{effRobustGuarantees} \cite{probGuarantees}.\\
 The states of the DTMC are determined by the values \( v_{k} \) can take, while the transitions are the values of the PMF for the computation time \( U(c) \).
-
-\section{Markov Chains concepts}
-A Discrete-Time Markov Process (DTMP) \( \{X_{n}\} \) is a stochastic process that describes transitions between one state to another. It is composed by a set of \emph{states} and the \emph{transitions} between them.
-\begin{figure}[H]
-  \center{\includegraphics[width=0.2\linewidth]{automaton.png}}
-  \caption{Graphical interpretation of a simple Markov chain.}
-  \label{automaton}
-\end{figure}
-
-This process is described as a matrix \( P \) (also called transition matrix) where the rows and the columns represent the states\footnote{For this reason the transition matrix is always squared.}, while the value stored in the cell \( P[i,\,j] \) is the probability to go from state \emph{i} to state \emph{j}.\\
-A Markov chain owns a key property that is at the base of any further consideration on this process: it is \textbf{memoryless}.\\
-This can be more formally expressed in terms of the conditional probabilities:
-\begin{equation} \tag{3} \label{memoryless}
-\begin{split}
-  \Pr\,\{X_{n} = x_{n} \mid X_{1} &= x_{1},\,X_{2} = x_{2},\,\dots\,, X_{n-1} = x_{n-1} \} =\\
-  \Pr\,\{X_{n} &= x_{n} \mid X_{n-1} = x_{n-1}  \}
-\end{split}
-\end{equation}
-
-In other words this means that the proability of transitioning from a state to another depends only on the previous step and not on the others taken before.\\
-Given a DTMP, \( \pi_{n}^{(j)} = \Pr\,\{X_{n} = j\}\) denotes a probability in the \( \pi_{n} \) vector defined as follows:
-\begin{equation*}
-  \pi_{n} =  \big[\pi_{n}^{(0)},\,\pi_{n}^{(1)},\,\dots \big]
-\end{equation*}
-
-Moreover, a generic element \(p_{i,\,j}\) of the transition matrix \( P \) is given by the following conditional probability:
-\begin{equation*}
-  p_{i,\,j} = \Pr\,\{X_{n} = j \mid X_{n-1} = i\}
-\end{equation*}
-
-Starting with an initial vector or probabilities \( \pi_{0} \) it is possible to calculate the evolution of the distribution over the time with the equation \( \pi_{n+1} = \pi_{n}P \).\\
-The equilibrium point is a vector \( \overset{\sim}{\pi} \) such that \( \overset{\sim}{\pi} = \overset{\sim}{\pi}P \), which is named invariant measure.\\
-In order to make it possible to find this vector, the Markov chain (MC) must be:
-\begin{itemize}
-  \item \textbf{positive recurrent}; to guarantee it, every state in the MC should be \emph{positive recurrent}\footnote{A state in a Markov chain is said to be positive recurrent if there exists a probability grater than zero that, starting from a state \emph{i}, the state will return to \emph{i} in a finite number of steps. A state can be also null recurrent, if the number of steps is not a finite value. A state which is not recurrent is called transient.}. 
-  \item \textbf{irriducible}; this means that every state can be reached by any other one in a finite number of steps with a probability grater than zero. Having this property implies that all the states are of the same type.  
-\end{itemize}
-
-Another important property of a MC which is both positive recurrent and irriducible is the existence of a single equilibrium vector \( \overset{\sim}{\pi} \), called \textbf{steady state distribution}, due to the fact that
-\begin{equation*}
-  \displaystyle\sum_{n} \pi_{n} = 1
-\end{equation*}
-
-A DTMC can be modeled as a \emph{Quasi-Birth-Death Process} (QDBP) if and only if its transition matrix \( P \) has the following internal block structure:
-\begin{equation*} \label{transitionmatrix}
-  P = 
-  \begin{bmatrix}
-    C & A_{0} & 0 & 0 & 0 & \cdots \\
-    A_{2} & A_{1} & A_{0} & 0 & 0 & \cdots \\
-    0 & \ddots & \ddots & \ddots & 0 & \cdots \\
-    0 & 0 & A_{2} & A_{1} & A_{0} & \cdots \\
-    \cdots & \cdots & \cdots & \cdots & \cdots & \ddots
-  \end{bmatrix}
-\end{equation*}
-
-where \( C \), \( A_{0} \), \( A_{1} \) e \( A_{2} \) are matrices. If they reduce to a scalar value this is a standard Birth-Death Process (BDP) \cite{probGuarantees}.
 
 \section{Benefits of QBDP} \label{benefits}
 Modeling the problem described in this chapter as a QBDP makes it more tractable from a numerical point of view. Analytical bounds and approximations are described in detail in \cite{probGuarantees}.\\
