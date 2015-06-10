@@ -70,7 +70,7 @@ This important propriety for RR is called \textbf{temporal isolation} and it is 
 
 This gives a huge advantage for the designer, since it is possible to analyse each task on its own without taking care of other tasks \cite{probGuarantees}.
 
-\section{Problem}
+\section{Problem} \label{problem}
 It is necessary to define also a function used to compute the resulting Quality of Service, given the scheduling parameters for a generic task.\\
 The function assumes that there exists a dependency between the scheduling parameters and the actual QoS. This is not always true and it can be very difficult to find \cite{prosit}.\\
 A possibility is to compute this value as a function of the distribution of the delayed tasks. For example, thinking about a video streaming service: if decoding a frame takes too much time and it leads to a deadline miss, that frame would not be displayed and the following job would start decoding the next one. Every non-decoded frame within the deadline leads to a frame not shown on the screen and consequently a decrease of the frame rate and of the quality.\\
@@ -134,26 +134,34 @@ A DTMC can be modeled as a \emph{Quasi-Birth-Death Process} (QDBP) \cite{nummeth
 where \( C \), \( A_{0} \), \( A_{1} \) e \( A_{2} \) are matrices. If they reduce to a scalar value this is a standard Birth-Death Process (BDP).
 
 \section{RR modeled as a Markov Chain}
+Since the computation time for each job is assumed to be an i.i.d. stochastic variable, the model shown by Equation \ref{markovProcess} represents a \emph{Discrete-Time Markov Chain} (DTMC) \cite{stochasticanalysis}.\\
 Let me introduce some of the notations used from now on:
 \begin{itemize}
-  \item \( F_{U}(c) = \displaystyle\sum_{h\,=\,c_{\,min}}^{c} U(c) \) denotes the Cumulative Distribution Function (CDF) for the computation time. For the seek of simplicity, it is assumed that the server\footnote{This model assumes the knowledge of the requirements of each task and the use a reservation-based scheduler, such as the Constant Bandwidth Server (CBS) \cite{pipelines}. The more general approach is to model the system as a queue with a single server.} period is an integer submultiple of the task period (\( T = NT^{s} \)).
   \item \( d_{k}^{s} \) denotes the latest scheduling deadline used for the job \( J_{k} \). This is an upper bound for \( f_{i,\,k} \): if Equation (\ref{schedCond}) is respected \( f_{i,\,k} \leq d_{k}^{s} \).
-  \item \( \delta_{k} = d_{k}^{s} - r_{k} \) represents an upper bound for the response time of the job.
+  \item \( \delta_{i,\,k} = d_{i,\,k}^{s} - r_{0,\,k} \) represents an upper bound for the response time of the job.
 \end{itemize}
 
 The value of \( \delta_{k} \) varies only in the discrete set of the multiples of the task period and \( \Pr\,\{\delta_{k} < D\} \) is a lower bound for the probability to meet the deadline.\\
-The rule followed by \( \delta_{k} \) is described in this way:
+The rule followed by the response time \( \delta_{i,\,k} \) is described as follows:
 \begin{equation} \tag{2} \label{markovProcess}
 \begin{split}
-  v_{0} &= c_{0}\\
-  v_{k+1} &= max\,\{0,\,NQ^{s} + c_{k+1}\}\\
-  \delta_{k} &= \ceil[\bigg]{\frac{v_{k}}{Q^{s}}}
+  v_{i,\,0} &= c_{i,\,0}\\
+  v_{i,\,k} &= max\,\{0,\,v_{i,\,k-1} - NQ_{i}^{s}\} + c_{i,\,k}\\
+  \delta_{k} &= \ceil[\bigg]{\frac{v_{i,\,k}}{Q_{i}^{s}}} \times T_{i}^{s}
 \end{split}
 \end{equation}
 
 The variable \( v_{k} \) cannot be measured empirically: it is the amount of backlogged computation time that has not be served by the scheduler yet and it must be taken into account when a new job arrives.\\
-Since the computation time for each job is assumed to be an i.i.d. stochastic variable, the model shown by Equation \ref{markovProcess} represents a \emph{Discrete-Time Markov Chain} (DTMC) \cite{effRobustGuarantees} \cite{probGuarantees}.\\
-The states of the DTMC are determined by the values \( v_{k} \) can take, while the transitions are the values of the PMF for the computation time \( U(c) \).
+Recalling the definition of \( U_{i}(\cdot) \) in Section \ref{problem}, the generic element for the transition matrix \emph{P} that describes the QBDP can be computed from Equation \ref{markovProcess} as follows:
+\begin{equation*}
+  P[x,y] = 
+  \begin{cases}
+    U_{0}(c_{0}^{min}+y) & {if\ } x \in [0,\,NQ_{0}^{s}-c_{0}^{min}] \\
+    U_{0}(y-x+NQ_{0}^{s}) & {if\ } x > NQ_{0}^{s}-c_{0}^{min}
+  \end{cases}
+\end{equation*}
+
+Introducing the definition \( a_{0,\,c} = U_{0}(c+c_{0}^{min}) \) and \( H_{0} = c_{0}^{max} - c_{0}^{min} \), the transition matrix can be written as in Figure 3.4, where the states are determined by the values \( v_{i,\,k} \) can take, while the transitions are the values of the PMF for the computation time \( U_{i}(\cdot) \).
 
 \section{Benefits of QBDP} \label{benefits}
 Modeling the problem described in this chapter as a QBDP makes it more tractable from a numerical point of view. Analytical bounds and approximations are described in detail in \cite{probGuarantees}.\\
