@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import matplotlib.pyplot as plt
+from pylab import *
 
 def plot():
   sizes = [296, 356, 444, 590, 884, 1766, 8188, 17634, 29388, 44080]
@@ -11,7 +12,19 @@ def plot():
   plt.plot(sizes, newtimesscaled, marker='o')
   plt.plot(sizes, oldtimesscaled, marker='o')
   plt.xlabel("Transition matrix size")
-  plt.ylabel("Elapsed time (seconds)")
+  plt.ylabel("Elapsed time ($s$)")
+
+  # this is another inset axes over the main axes                                 
+  a = axes([0.19, 0.55, .4, .3])                                        
+  plt.plot(sizes, oldtimes, marker='o')
+  plt.plot(sizes, newtimes, marker='o') 
+  plt.ylabel("Elapsed time ($us$)")                                                  
+  setp(a, xlim=(0,2000), ylim=(0,440000), xticks=[], yticks=[])
+  a.set_xticks([0, 300, 600, 900, 1200, 1500, 1800, 2000])
+  a.set_yticks([200000, 400000])
+  plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+  plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
   plt.show()
 
 if __name__ == '__main__':
