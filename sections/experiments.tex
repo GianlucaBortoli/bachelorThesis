@@ -8,13 +8,13 @@
 % + performance enhencment in matrix creation (see Bernardo's emails) [rememer to put reference
 %   in the prosit overview chapter]
 
-The version of PROSIT described in this thesis brings a lot of improvements in the project format, especially in the core classes that holds the functions and the parameters connected to a task. Big changes in the code structure imply a complete revision of the results, even though they have been deeply checked in the "old" version of the tool.\\
-This decision was not painless at all but is was necessary: PROSIT have been mainly developed and used in some papers\footnote{An example of paper which involved PROSIT to compute some results is \cite{probGuarantees}.} and the code structure was not an absolute priority at that moment. Then it gained interest, due to its capability to provide a good abstraction for many of the foundamental concepts during the design of real-time systems.\\
-The modifications in the structure of the code made it necessary to check that the results provided by this "new" version does not contain or introduce any error. This phase of testing has been done by running multiple tasks with different parameters on both versions and then checking the correctness of the results. None inconsistency in the outputs was found while comparing the two.\\
+The version of PROSIT described in this thesis brings several improvements in the project format, especially in the core classes that holds the functions and the parameters connected to a task. Big changes in the code structure imply a complete revision of the results, even though they have been deeply checked in the "old" version of the tool.\\
+This decision was not painless at all but is was necessary: PROSIT have been mainly developed and used in some papers\footnote{An example of paper which involved PROSIT to compute some results is \cite{probGuarantees}.} and the code structure was not an absolute priority at that moment. Then it gained interest, due to its capability to provide a good abstraction for many of the foundamental concepts during the design of real-time systems. For this reason the project has been modified following a new approach.\\
+The changes in the structure of the code made it necessary to check that the results provided by this "new" version does not contain or introduce any error. This phase of testing has been done by running multiple tasks with different parameters on both versions and then checking the correctness of the results. None inconsistency in the outputs was found while comparing the two.\\
 The process of testing and comparison described above was done in an automated way using some scripts written in bash.
 
 \section{Cyclic Reduction accuracy} \label{craccuracy}
-In order to compare the accuracy between the analytical and the Cyclic Reduction results, a task with the same parameters (except for the bandwith) is considered. The budget \( Q_{s} \) is changed to make the bandwith value in the range [35\% - 60\%]. The results are visible in the table below.
+In order to compare the accuracy between the analytical and the Cyclic Reduction algorithms, a task with the same parameters (except for the bandwith) is considered. The budget \( Q_{s} \) is changed to make the bandwith value in the range [35\% - 60\%]. The results with a granularity of 50\,\( \mu{s} \) are visible in the table below.
 \begin{table}[H]
 \label{comparison}
 \begin{center}
@@ -24,7 +24,7 @@ In order to compare the accuracy between the analytical and the Cyclic Reduction
   Analitic bound & 0.602 & 0.809 & 0.906 & 0.956 & 0.991 \\
   CR algorithm & 0.773 & 0.878 & 0.929 & 0.965 & 0.992 \\ \hline
 \end{tabular}
-\caption[]{Probabilities for different bandwith and a 50\,\( \mu{s} \) as granularity\footnotemark[3].}
+\caption[]{Probabilities for different values of bandwith\footnotemark[3].}
 \end{center} 
 \end{table}
 
@@ -47,7 +47,7 @@ As described in Section \ref{matrixcreation}, the efficiency of the matrix creat
 \end{table}
 
 
-It is possible to see how much the method developed and discussed in this thesis is faster: the computation takes nearly 50000\(\,\mu{s} \) less with a matrix size of only 442 rows/columns. It represents a boost of about 40\% in terms of pure performance: this is a noteworthy result, since the matrix size taken into consideration in Table \ref{benchmark} is quite small.\\
+It is possible to see how much the method developed and discussed in this thesis is faster. The computation takes nearly 50000\(\,\mu{s} \) less with a matrix size of only 442 rows/columns, representing a boost of about 40\% in terms of pure performance. This is a noteworthy result, since the matrix size taken into consideration in Table \ref{benchmark} is quite small.\\
 
 \begin{figure}[H]
   \center{\includegraphics[width=0.6\linewidth]{performance_chart.png}}
