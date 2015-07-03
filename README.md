@@ -1,1 +1,1 @@
-PROSIT: A TOOL FOR OPTIMAL DESIGN OF SOFT-REAL TIME SYSTEMS
+PROSIT: A tool for optimal design of soft real-time systems
