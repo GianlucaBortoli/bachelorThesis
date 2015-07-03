@@ -25,7 +25,7 @@ Each job \( J_{i,\,k} \) is defined as a touple \( \left(r_{i,\,k}, \;f_{i,\,k},
 
 The computation time is assumed to be an independent and identically distributed (i.i.d.\footnote{Two random variables X and Y are said to be independent and identically distributed if the first has the same probability distribution of the second one and both are mutually independent, which means that the occurrence of X does not affect Y (and vice versa).}) stochastic process. Hence for each job instance, \( c_{i,\,k} \) is a random variable described by a certain Probability Mass Function (PMF).
 \begin{figure}[H]
-  \center{\includegraphics[width=0.5\linewidth]{model_task.png}}
+  \center{\includegraphics[width=0.7\linewidth]{model_task.png}}
   \caption{Mathematical model of a task.}
   \label{taskmodel}
 \end{figure}
@@ -77,7 +77,7 @@ A possibility is to compute this value as a function of the distribution of the 
 In view of the last considerations, the \textbf{analysis problem} that we address can be stated as follows: given a series of soft real-time tasks with a PMF \( U_{i}(c) = \Pr\{c_{i,\,j} = c\} \) which describes the stochastic computation time for the \( i^{th} \) task, a PMF \( I_{i}(t) = \Pr\{r_{i,\,j+1}-r_{i,\,j} = t\} \) for the inter-arrival time, a QoS function and the scheduling parameters mentioned so far, determine whether the set of tasks \( \{\tau_{i}\} \) is schedulable or not. If \( \tau_{i} \) is schedulable, the resulting QoS is computed.\\
 For the analysis problem, the scheduling parameters are assumed to be selected by the user.
 
-\section{Markov Chains concepts} \label{mcconcepts}
+\section{Markov Chains background} \label{mcconcepts}
 A Discrete-Time Markov Process (DTMP) \( \{X_{n}\} \) is a stochastic process that describes transitions between one state to another. As it possible to notice from Figure \ref{automaton}, a Markov chain is composed by a set of \emph{states} and the \emph{transitions} between them. The values associated to the arrows describe the probability to move from a state to another.
 \begin{figure}[H]
   \center{\includegraphics[width=0.2\linewidth]{automaton.png}}
